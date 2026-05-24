@@ -112,7 +112,7 @@ export default function AddBookScreen() {
           ) : (
             <View style={styles.coverPlaceholder}>
               <View style={styles.cameraIconContainer}>
-                <IconSymbol name="camera" size={28} color="#0284c7" />
+                <IconSymbol name="camera" size={28} color="#7C3AED" />
               </View>
               <Text style={styles.coverText}>Upload Cover Buku</Text>
               <Text style={styles.coverSubtext}>Rekomendasi rasio 2:3</Text>
@@ -187,7 +187,7 @@ export default function AddBookScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#e2e8f0' },
+  container: { flex: 1, backgroundColor: '#F5F3FF' },
   scrollContent: { padding: 24, paddingBottom: 40 },
   header: { 
     marginBottom: 28, 
@@ -200,12 +200,12 @@ const styles = StyleSheet.create({
   scanButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#0284c7', 
+    backgroundColor: '#7C3AED', 
     paddingHorizontal: 16, 
     paddingVertical: 10, 
     borderRadius: 14, 
     gap: 6,
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -218,14 +218,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 20, 
     borderWidth: 2, 
-    borderColor: '#e0f2fe',
+    borderColor: '#EDE9FE',
     borderStyle: 'dashed', 
     alignSelf: 'center', 
     marginBottom: 28,
     justifyContent: 'center', 
     alignItems: 'center', 
     overflow: 'hidden',
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.04,
     shadowRadius: 15,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: '#e0f2fe',
+    backgroundColor: '#EDE9FE',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -253,10 +253,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14, 
     borderRadius: 14, 
     borderWidth: 1, 
-    borderColor: '#e0f2fe',
+    borderColor: '#EDE9FE',
     fontSize: 16, 
     outlineStyle: 'none', // for web
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.02,
     shadowRadius: 6,
@@ -270,9 +270,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14, 
     borderRadius: 14, 
     borderWidth: 1, 
-    borderColor: '#e0f2fe', 
+    borderColor: '#EDE9FE', 
     gap: 12,
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.02,
     shadowRadius: 6,

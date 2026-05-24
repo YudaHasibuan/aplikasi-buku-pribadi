@@ -86,7 +86,7 @@ export default function CollectionsScreen() {
         {collections.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIconContainer}>
-              <IconSymbol name="folder" size={48} color="#0284c7" />
+              <IconSymbol name="folder" size={48} color="#7C3AED" />
             </View>
             <Text style={styles.emptyText}>Belum Ada Rak</Text>
             <Text style={styles.emptySubText}>Buat rak kustom pertama Anda untuk menyortir buku fisik maupun e-book digital.</Text>
@@ -103,7 +103,7 @@ export default function CollectionsScreen() {
                 onPress={() => router.push(`/collection/${col.id}`)}
               >
                 <View style={styles.collectionIconContainer}>
-                  <IconSymbol name="folder" size={28} color="#0284c7" />
+                  <IconSymbol name="folder" size={28} color="#7C3AED" />
                 </View>
                 <View style={styles.collectionInfo}>
                   <Text style={styles.collectionName} numberOfLines={1}>{col.name}</Text>
@@ -166,7 +166,7 @@ export default function CollectionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#e2e8f0' },
+  container: { flex: 1, backgroundColor: '#F5F3FF' },
   scrollContent: { paddingBottom: 40 },
   header: { 
     flexDirection: 'row', 
@@ -181,12 +181,12 @@ const styles = StyleSheet.create({
   addButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#0284c7', 
+    backgroundColor: '#7C3AED', 
     paddingHorizontal: 16, 
     paddingVertical: 10, 
     borderRadius: 14, 
     gap: 6,
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingVertical: 40,
     borderWidth: 1,
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.04,
     shadowRadius: 16,
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#e0f2fe',
+    backgroundColor: '#EDE9FE',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   emptyText: { color: '#0f172a', fontSize: 20, fontWeight: 'bold', marginTop: 8 },
   emptySubText: { color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 },
   emptyButton: {
-    backgroundColor: '#0284c7',
+    backgroundColor: '#7C3AED',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
@@ -239,8 +239,8 @@ const styles = StyleSheet.create({
     padding: 16, 
     borderRadius: 20, 
     borderWidth: 1, 
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.04,
     shadowRadius: 12,

@@ -89,8 +89,8 @@ export default function StatsHubScreen() {
           
           {/* Card Total Buku */}
           <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: '#e0f2fe' }]}>
-              <IconSymbol name="books.vertical.fill" size={24} color="#0284c7" />
+            <View style={[styles.iconWrapper, { backgroundColor: '#EDE9FE' }]}>
+              <IconSymbol name="books.vertical.fill" size={24} color="#7C3AED" />
             </View>
             <Text style={styles.statNumber}>{totalBooks}</Text>
             <Text style={styles.statLabel}>Total Koleksi</Text>
@@ -139,7 +139,7 @@ export default function StatsHubScreen() {
               <View style={styles.chartBarContainer}>
                 {readingPct > 0 && <View style={[styles.chartBarSegment, { width: `${readingPct}%`, backgroundColor: '#3b82f6' }]} />}
                 {completedPct > 0 && <View style={[styles.chartBarSegment, { width: `${completedPct}%`, backgroundColor: '#10b981' }]} />}
-                {wantedPct > 0 && <View style={[styles.chartBarSegment, { width: `${wantedPct}%`, backgroundColor: '#0284c7' }]} />}
+                {wantedPct > 0 && <View style={[styles.chartBarSegment, { width: `${wantedPct}%`, backgroundColor: '#7C3AED' }]} />}
                 {pausedPct > 0 && <View style={[styles.chartBarSegment, { width: `${pausedPct}%`, backgroundColor: '#f59e0b' }]} />}
               </View>
 
@@ -163,7 +163,7 @@ export default function StatsHubScreen() {
                 </View>
 
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#0284c7' }]} />
+                  <View style={[styles.legendIndicator, { backgroundColor: '#7C3AED' }]} />
                   <View style={styles.legendTextWrapper}>
                     <Text style={styles.legendName}>Ingin Baca</Text>
                     <Text style={styles.legendVal}>{wantedBooks} Buku ({Math.round(wantedPct)}%)</Text>
@@ -210,7 +210,7 @@ export default function StatsHubScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e2e8f0', // Soft Gray Blue
+    backgroundColor: '#F5F3FF', // Soft Gray Blue
   },
   scrollContent: {
     paddingBottom: 40,
@@ -239,9 +239,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#bae6fd', // Soft Light Blue Border
+    borderColor: '#DDD6FE', // Soft Light Blue Border
     borderStyle: 'dashed',
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   quoteAuthor: {
-    color: '#0284c7',
+    color: '#7C3AED',
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
@@ -276,8 +276,8 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.04,
     shadowRadius: 12,
@@ -308,9 +308,9 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#e0f2fe',
+    borderColor: '#EDE9FE',
     marginBottom: 24,
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.04,
     shadowRadius: 16,

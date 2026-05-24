@@ -210,7 +210,7 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e2e8f0', // Soft Gray Blue
+    backgroundColor: '#F5F3FF', // Soft Gray Blue
   },
   scrollContent: {
     paddingBottom: 40,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#0284c7', // Sky blue border
+    borderColor: '#7C3AED', // Sky blue border
     overflow: 'hidden',
   },
   avatar: {
@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e0f2fe',
+    borderColor: '#EDE9FE',
     marginBottom: 24,
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 10,
@@ -297,8 +297,8 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.05,
     shadowRadius: 15,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#0284c7', // Sky Blue
+    backgroundColor: '#7C3AED', // Sky Blue
     borderRadius: 3,
   },
   progressText: {
@@ -354,16 +354,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
     elevation: 1,
   },
   filterChipActive: {
-    backgroundColor: '#0284c7',
-    borderColor: '#0284c7',
+    backgroundColor: '#7C3AED',
+    borderColor: '#7C3AED',
   },
   filterChipText: {
     color: '#475569',
@@ -391,14 +391,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    shadowColor: '#0284c7',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 4,
     backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#e0f2fe',
+    borderColor: '#EDE9FE',
   },
   gridCover: {
     width: '100%',
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   genreText: {
-    color: '#0284c7',
+    color: '#7C3AED',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',

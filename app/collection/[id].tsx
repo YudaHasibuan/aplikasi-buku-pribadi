@@ -65,7 +65,7 @@ export default function CollectionDetailScreen() {
           headerTintColor: '#0f172a',
           headerRight: () => (
             <Pressable onPress={openAddModal} style={{ marginRight: 16 }}>
-              <IconSymbol name="plus.circle.fill" size={24} color="#0284c7" />
+              <IconSymbol name="plus.circle.fill" size={24} color="#7C3AED" />
             </Pressable>
           ),
         }} 
@@ -74,7 +74,7 @@ export default function CollectionDetailScreen() {
         {collectionBooks.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIconContainer}>
-              <IconSymbol name="folder" size={48} color="#0284c7" />
+              <IconSymbol name="folder" size={48} color="#7C3AED" />
             </View>
             <Text style={styles.emptyText}>Rak ini masih kosong.</Text>
             <Text style={styles.emptySubText}>Tambahkan buku dari koleksi Anda ke rak ini agar terorganisir.</Text>
@@ -92,7 +92,7 @@ export default function CollectionDetailScreen() {
                       {book.cover ? (
                         <Image source={{ uri: book.cover }} style={styles.bookCover} />
                       ) : (
-                        <View style={[styles.bookCover, { backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#e2e8f0' }]}>
+                        <View style={[styles.bookCover, { backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#F5F3FF' }]}>
                           <IconSymbol name="books.vertical.fill" size={20} color="#94a3b8" />
                         </View>
                       )}
@@ -158,7 +158,7 @@ export default function CollectionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#e2e8f0' },
+  container: { flex: 1, backgroundColor: '#F5F3FF' },
   emptyContainer: { 
     flex: 1, 
     justifyContent: 'center', 
@@ -168,8 +168,8 @@ const styles = StyleSheet.create({
     margin: 24,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.04,
     shadowRadius: 16,
@@ -179,14 +179,14 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#e0f2fe',
+    backgroundColor: '#EDE9FE',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
   },
   emptyText: { color: '#0f172a', fontSize: 18, fontWeight: 'bold', marginTop: 8 },
   emptySubText: { color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 8, marginBottom: 24, lineHeight: 20 },
-  addBookBtn: { backgroundColor: '#0284c7', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
+  addBookBtn: { backgroundColor: '#7C3AED', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
   addBookBtnText: { color: '#ffffff', fontWeight: 'bold' },
   scrollContent: { padding: 24 },
   listContainer: { gap: 16 },
@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff', 
     borderRadius: 20, 
     borderWidth: 1, 
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
+    borderColor: '#EDE9FE',
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.04,
     shadowRadius: 12,
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 24, 
     padding: 24, 
     borderWidth: 1, 
-    borderColor: '#e0f2fe',
+    borderColor: '#EDE9FE',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
