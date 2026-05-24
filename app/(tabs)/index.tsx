@@ -12,6 +12,7 @@ const isWeb = Platform.OS === 'web';
 export default function LibraryScreen() {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('Semua'); // 'Semua', 'Sedang Dibaca', 'Selesai', 'Ingin Baca', 'Favorit'
 
   useFocusEffect(
     useCallback(() => {
@@ -30,13 +31,36 @@ export default function LibraryScreen() {
     }, [])
   );
 
-  const filteredBooks = books.filter(book => 
-    book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (book.genre && book.genre.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Dynamic Greeting based on time
+  const getGreeting = () => {
+    const hours = new Date().getHours();
+    if (hours < 12) return 'Selamat Pagi 🌅';
+    if (hours < 17) return 'Selamat Siang ☀️';
+    if (hours < 21) return 'Selamat Sore 🌇';
+    return 'Selamat Malam 🌌';
+  };
+
+  // Filter books by search and filter chips
+  const filteredBooks = books.filter(book => {
+    const matchesSearch = 
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (book.genre && book.genre.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+    if (!matchesSearch) return false;
+
+    if (activeFilter === 'Semua') return true;
+    if (activeFilter === 'Sedang Dibaca') return book.status === 'Sedang Dibaca';
+    if (activeFilter === 'Selesai') return book.status === 'Selesai';
+    if (activeFilter === 'Ingin Baca') return book.status === 'Ingin Baca';
+    if (activeFilter === 'Favorit') return book.is_favorite === 1;
+
+    return true;
+  });
 
   const recentBooks = books.filter(b => b.status === 'Sedang Dibaca' || b.status === 'Ingin Baca').slice(0, 5);
+
+  const filters = ['Semua', 'Sedang Dibaca', 'Selesai', 'Ingin Baca', 'Favorit'];
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -45,12 +69,12 @@ export default function LibraryScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Good Evening,</Text>
-            <Text style={styles.title}>Your Library</Text>
+            <Text style={styles.greeting}>{getGreeting()}</Text>
+            <Text style={styles.title}>Perpustakaanku</Text>
           </View>
           <View style={styles.avatarContainer}>
             <Image 
-              source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop' }} 
+              source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop' }} 
               style={styles.avatar} 
             />
           </View>
@@ -61,26 +85,25 @@ export default function LibraryScreen() {
           <IconSymbol name="magnifyingglass" size={20} color="#94a3b8" />
           <TextInput 
             style={styles.searchInput} 
-            placeholder="Search titles, authors, or genres..." 
+            placeholder="Cari judul, penulis, atau genre..." 
             placeholderTextColor="#64748b"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
 
-        {/* Continue Reading Section (Only show if not searching) */}
-        {!searchQuery && recentBooks.length > 0 && (
+        {/* Continue Reading Section (Only show if not searching & not filtered) */}
+        {!searchQuery && activeFilter === 'Semua' && recentBooks.length > 0 && (
           <>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Continue Reading</Text>
-              <Pressable><Text style={styles.seeAll}>See All</Text></Pressable>
+              <Text style={styles.sectionTitle}>Lanjutkan Membaca</Text>
             </View>
 
             <ScrollView 
               horizontal 
               showsHorizontalScrollIndicator={false} 
               contentContainerStyle={styles.horizontalScroll}
-              snapToInterval={isWeb ? undefined : 220}
+              snapToInterval={280}
               decelerationRate="fast"
             >
               {recentBooks.map((book) => (
@@ -99,7 +122,7 @@ export default function LibraryScreen() {
                       <View style={styles.progressContainer}>
                         <View style={[styles.progressBar, { width: `${book.progress}%` }]} />
                       </View>
-                      <Text style={styles.progressText}>{book.progress}% completed</Text>
+                      <Text style={styles.progressText}>{book.progress}% selesai</Text>
                     </View>
                   </Pressable>
                 </Link>
@@ -108,15 +131,43 @@ export default function LibraryScreen() {
           </>
         )}
 
+        {/* Filter Chips */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterScroll}
+        >
+          {filters.map((filter) => (
+            <Pressable
+              key={filter}
+              style={[
+                styles.filterChip,
+                activeFilter === filter && styles.filterChipActive
+              ]}
+              onPress={() => setActiveFilter(filter)}
+            >
+              <Text style={[
+                styles.filterChipText,
+                activeFilter === filter && styles.filterChipTextActive
+              ]}>
+                {filter}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
         {/* All Books Section */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>All Collection</Text>
+          <Text style={styles.sectionTitle}>
+            {activeFilter === 'Semua' ? 'Semua Koleksi' : `Koleksi: ${activeFilter}`}
+          </Text>
         </View>
 
         {filteredBooks.length === 0 ? (
-          <View style={{ padding: 24, alignItems: 'center', marginTop: 20 }}>
-            <Text style={{ color: '#64748b', fontSize: 16 }}>
-              {searchQuery ? 'Buku tidak ditemukan.' : 'Belum ada buku. Yuk tambahkan koleksi pertamamu!'}
+          <View style={styles.emptyContainer}>
+            <IconSymbol name="books.vertical.fill" size={48} color="#334155" />
+            <Text style={styles.emptyText}>
+              {searchQuery ? 'Buku tidak ditemukan.' : 'Tidak ada koleksi buku di kategori ini.'}
             </Text>
           </View>
         ) : (
@@ -128,7 +179,7 @@ export default function LibraryScreen() {
                     {book.cover ? (
                       <Image source={{ uri: book.cover }} style={styles.gridCover} />
                     ) : (
-                      <View style={[styles.gridCover, { backgroundColor: '#1e293b', justifyContent: 'center', alignItems: 'center' }]}>
+                      <View style={[styles.gridCover, { backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center' }]}>
                         <IconSymbol name="books.vertical.fill" size={40} color="#64748b" />
                       </View>
                     )}
@@ -137,8 +188,13 @@ export default function LibraryScreen() {
                         <Text style={styles.genreText} numberOfLines={1}>{book.genre}</Text>
                       </View>
                     )}
+                    {book.is_favorite === 1 && (
+                      <View style={styles.favBadge}>
+                        <IconSymbol name="heart.fill" size={12} color="#ef4444" />
+                      </View>
+                    )}
                   </View>
-                  <Text style={styles.gridTitle} numberOfLines={2}>{book.title}</Text>
+                  <Text style={styles.gridTitle} numberOfLines={1}>{book.title}</Text>
                   <Text style={styles.gridAuthor} numberOfLines={1}>{book.author}</Text>
                 </Pressable>
               </Link>
@@ -170,7 +226,6 @@ const styles = StyleSheet.create({
   greeting: {
     color: '#94a3b8',
     fontSize: 14,
-    fontFamily: Platform.select({ ios: 'System', default: 'sans-serif' }),
     fontWeight: '500',
     marginBottom: 4,
   },
@@ -178,7 +233,6 @@ const styles = StyleSheet.create({
     color: '#f8fafc',
     fontSize: 28,
     fontWeight: 'bold',
-    fontFamily: Platform.select({ ios: 'System', default: 'sans-serif' }),
     letterSpacing: -0.5,
   },
   avatarContainer: {
@@ -186,7 +240,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#334155',
+    borderColor: '#3730a3',
     overflow: 'hidden',
   },
   avatar: {
@@ -203,7 +257,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#1e293b',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   searchInput: {
     flex: 1,
@@ -225,18 +279,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: -0.3,
   },
-  seeAll: {
-    color: '#818cf8', // Indigo 400
-    fontSize: 14,
-    fontWeight: '600',
-  },
   horizontalScroll: {
     paddingLeft: 24,
     paddingRight: 8,
-    paddingBottom: 32,
+    paddingBottom: 24,
   },
   recentBookCard: {
-    width: 260,
+    width: 270,
     backgroundColor: '#0f172a',
     borderRadius: 20,
     marginRight: 16,
@@ -288,6 +337,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
+  filterScroll: {
+    paddingLeft: 24,
+    paddingRight: 8,
+    marginBottom: 24,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#0f172a',
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+  },
+  filterChipActive: {
+    backgroundColor: '#3730a3',
+    borderColor: '#818cf8',
+  },
+  filterChipText: {
+    color: '#94a3b8',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  filterChipTextActive: {
+    color: '#e0e7ff',
+  },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -311,7 +386,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 8,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#1e293b',
   },
   gridCover: {
     width: '100%',
@@ -321,11 +398,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    backdropFilter: 'blur(8px)', // For web
     maxWidth: '80%',
   },
   genreText: {
@@ -333,6 +409,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
+  },
+  favBadge: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    padding: 6,
+    borderRadius: 8,
   },
   gridTitle: {
     color: '#f8fafc',
@@ -343,5 +427,16 @@ const styles = StyleSheet.create({
   gridAuthor: {
     color: '#64748b',
     fontSize: 12,
+  },
+  emptyContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  emptyText: {
+    color: '#64748b',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

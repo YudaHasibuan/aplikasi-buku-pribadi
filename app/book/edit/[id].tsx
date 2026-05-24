@@ -112,18 +112,24 @@ export default function EditBookScreen() {
         }} 
       />
       <SafeAreaView style={styles.container} edges={['bottom']}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          {/* Cover Upload Box */}
           <Pressable style={styles.coverUpload} onPress={pickImage}>
             {cover ? (
               <Image source={{ uri: cover }} style={styles.coverImage} />
             ) : (
               <View style={styles.coverPlaceholder}>
-                <IconSymbol name="camera" size={32} color="#64748b" />
-                <Text style={styles.coverText}>Upload Cover</Text>
+                <View style={styles.cameraIconContainer}>
+                  <IconSymbol name="camera" size={28} color="#818cf8" />
+                </View>
+                <Text style={styles.coverText}>Ganti Cover Buku</Text>
+                <Text style={styles.coverSubtext}>Rekomendasi rasio 2:3</Text>
               </View>
             )}
           </Pressable>
 
+          {/* Form Fields */}
           <View style={styles.formGroup}>
             <Text style={styles.label}>Judul Buku *</Text>
             <TextInput 
@@ -131,7 +137,7 @@ export default function EditBookScreen() {
               value={title} 
               onChangeText={setTitle} 
               placeholder="Masukkan judul buku..." 
-              placeholderTextColor="#64748b" 
+              placeholderTextColor="#475569" 
             />
           </View>
 
@@ -142,7 +148,7 @@ export default function EditBookScreen() {
               value={author} 
               onChangeText={setAuthor} 
               placeholder="Nama penulis..." 
-              placeholderTextColor="#64748b" 
+              placeholderTextColor="#475569" 
             />
           </View>
 
@@ -153,16 +159,16 @@ export default function EditBookScreen() {
               value={genre} 
               onChangeText={setGenre} 
               placeholder="Contoh: Fiction, Science, dll." 
-              placeholderTextColor="#64748b" 
+              placeholderTextColor="#475569" 
             />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.label}>File PDF (E-Book)</Text>
+            <Text style={styles.label}>Berkas E-Book (PDF)</Text>
             <Pressable style={styles.pdfUploadBtn} onPress={pickPdf}>
-              <IconSymbol name="doc.fill" size={24} color={pdfUri ? "#818cf8" : "#64748b"} />
-              <Text style={[styles.pdfUploadText, pdfUri && { color: '#818cf8' }]} numberOfLines={1}>
-                {pdfUri ? 'File PDF Tersimpan' : 'Pilih File PDF Baru'}
+              <IconSymbol name="doc.fill" size={20} color={pdfUri ? "#10b981" : "#64748b"} />
+              <Text style={[styles.pdfUploadText, pdfUri && { color: '#10b981', fontWeight: 'bold' }]} numberOfLines={1}>
+                {pdfUri ? 'File PDF Terlampir' : 'Pilih File PDF Baru'}
               </Text>
             </Pressable>
           </View>
@@ -174,7 +180,7 @@ export default function EditBookScreen() {
               value={synopsis} 
               onChangeText={setSynopsis} 
               placeholder="Tuliskan sinopsis singkat..." 
-              placeholderTextColor="#64748b" 
+              placeholderTextColor="#475569" 
               multiline 
               numberOfLines={4} 
             />
@@ -195,31 +201,76 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#020617' },
   scrollContent: { padding: 24, paddingBottom: 40 },
   coverUpload: {
-    width: 140, height: 210, backgroundColor: '#0f172a',
-    borderRadius: 12, borderWidth: 2, borderColor: '#1e293b',
-    borderStyle: 'dashed', alignSelf: 'center', marginBottom: 24,
-    justifyContent: 'center', alignItems: 'center', overflow: 'hidden'
+    width: 150, 
+    height: 220, 
+    backgroundColor: '#0f172a',
+    borderRadius: 20, 
+    borderWidth: 2, 
+    borderColor: '#1e293b',
+    borderStyle: 'dashed', 
+    alignSelf: 'center', 
+    marginBottom: 28,
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 8
   },
   coverImage: { width: '100%', height: '100%' },
-  coverPlaceholder: { alignItems: 'center' },
-  coverText: { color: '#64748b', marginTop: 8, fontSize: 14 },
+  coverPlaceholder: { alignItems: 'center', padding: 16 },
+  cameraIconContainer: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#020617',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#1e293b'
+  },
+  coverText: { color: '#cbd5e1', fontSize: 14, fontWeight: 'bold' },
+  coverSubtext: { color: '#64748b', fontSize: 11, marginTop: 4 },
   formGroup: { marginBottom: 20 },
   label: { color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 8 },
   input: {
-    backgroundColor: '#0f172a', color: '#f8fafc', paddingHorizontal: 16,
-    paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: '#1e293b',
-    fontSize: 16, outlineStyle: 'none'
+    backgroundColor: '#0f172a', 
+    color: '#f8fafc', 
+    paddingHorizontal: 16,
+    paddingVertical: 14, 
+    borderRadius: 14, 
+    borderWidth: 1, 
+    borderColor: '#1e293b',
+    fontSize: 16, 
+    outlineStyle: 'none'
   },
   pdfUploadBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#0f172a', 
-    paddingHorizontal: 16, paddingVertical: 14, borderRadius: 12, 
-    borderWidth: 1, borderColor: '#1e293b', gap: 12
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#0f172a', 
+    paddingHorizontal: 16, 
+    paddingVertical: 14, 
+    borderRadius: 14, 
+    borderWidth: 1, 
+    borderColor: '#1e293b', 
+    gap: 12
   },
   pdfUploadText: { color: '#64748b', fontSize: 16, flex: 1 },
   textArea: { minHeight: 100, textAlignVertical: 'top' },
   saveButton: {
-    backgroundColor: '#818cf8', paddingVertical: 16, borderRadius: 12,
-    alignItems: 'center', marginTop: 12
+    backgroundColor: '#818cf8', 
+    paddingVertical: 16, 
+    borderRadius: 14,
+    alignItems: 'center', 
+    marginTop: 16,
+    shadowColor: '#818cf8',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6
   },
   saveButtonText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' }
 });

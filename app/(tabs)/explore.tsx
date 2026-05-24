@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, Platform, Dimensions, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
-import { getBooks, Book } from '@/database/db';
+import { getAllBooks, Book } from '@/database/db';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
 const { width } = Dimensions.get('window');
@@ -23,7 +23,7 @@ export default function StatsHubScreen() {
   useFocusEffect(
     useCallback(() => {
       const loadBooks = async () => {
-        const allBooks = await getBooks();
+        const allBooks = await getAllBooks();
         setBooks(allBooks);
       };
       loadBooks();

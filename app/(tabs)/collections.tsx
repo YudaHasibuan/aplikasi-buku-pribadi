@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, ScrollView, Pressable, TextInput, Modal, Alert } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Pressable, TextInput, Modal, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getCollections, addCollection, deleteCollection, Collection, initDb } from '@/database/db';
@@ -30,7 +30,7 @@ export default function CollectionsScreen() {
 
   const handleAddCollection = async () => {
     if (!newCollectionName.trim()) {
-      Alert.alert('Error', 'Nama koleksi tidak boleh kosong.');
+      Alert.alert('Error', 'Nama rak tidak boleh kosong.');
       return;
     }
     
@@ -43,15 +43,15 @@ export default function CollectionsScreen() {
       setNewCollectionDesc('');
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Gagal membuat koleksi baru.');
+      Alert.alert('Error', 'Gagal membuat rak baru.');
     }
   };
 
   const handleDelete = (id?: number) => {
     if (!id) return;
     Alert.alert(
-      'Hapus Koleksi',
-      'Yakin ingin menghapus koleksi ini? Buku di dalamnya tidak akan terhapus.',
+      'Hapus Rak Buku',
+      'Yakin ingin menghapus rak ini? Buku di dalamnya tidak akan ikut terhapus.',
       [
         { text: 'Batal', style: 'cancel' },
         { 
@@ -73,7 +73,10 @@ export default function CollectionsScreen() {
         
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Koleksi & Rak</Text>
+          <View>
+            <Text style={styles.subtitle}>Kelompokkan Buku Anda</Text>
+            <Text style={styles.title}>Koleksi & Rak</Text>
+          </View>
           <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
             <IconSymbol name="plus.circle.fill" size={20} color="#ffffff" />
             <Text style={styles.addButtonText}>Rak Baru</Text>
@@ -82,9 +85,14 @@ export default function CollectionsScreen() {
 
         {collections.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <IconSymbol name="folder" size={64} color="#334155" />
-            <Text style={styles.emptyText}>Belum ada koleksi.</Text>
-            <Text style={styles.emptySubText}>Buat rak baru untuk mengelompokkan buku-buku Anda.</Text>
+            <View style={styles.emptyIconContainer}>
+              <IconSymbol name="folder" size={48} color="#64748b" />
+            </View>
+            <Text style={styles.emptyText}>Belum Ada Rak</Text>
+            <Text style={styles.emptySubText}>Buat rak kustom pertama Anda untuk menyortir buku fisik maupun e-book digital.</Text>
+            <Pressable style={styles.emptyButton} onPress={() => setModalVisible(true)}>
+              <Text style={styles.emptyButtonText}>Buat Rak Sekarang</Text>
+            </Pressable>
           </View>
         ) : (
           <View style={styles.collectionsList}>
@@ -95,14 +103,14 @@ export default function CollectionsScreen() {
                 onPress={() => router.push(`/collection/${col.id}`)}
               >
                 <View style={styles.collectionIconContainer}>
-                  <IconSymbol name="folder" size={32} color="#818cf8" />
+                  <IconSymbol name="folder" size={28} color="#818cf8" />
                 </View>
                 <View style={styles.collectionInfo}>
-                  <Text style={styles.collectionName}>{col.name}</Text>
-                  <Text style={styles.collectionCount}>{col.bookCount} Buku</Text>
+                  <Text style={styles.collectionName} numberOfLines={1}>{col.name}</Text>
+                  <Text style={styles.collectionCount}>{col.bookCount || 0} Buku Terdaftar</Text>
                 </View>
                 <Pressable onPress={() => handleDelete(col.id)} style={styles.deleteButton}>
-                  <IconSymbol name="trash.fill" size={20} color="#64748b" />
+                  <IconSymbol name="trash.fill" size={20} color="#ef4444" />
                 </Pressable>
               </Pressable>
             ))}
@@ -112,7 +120,7 @@ export default function CollectionsScreen() {
 
       {/* Modal Add Collection */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}
@@ -121,12 +129,12 @@ export default function CollectionsScreen() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Buat Rak Baru</Text>
             
-            <Text style={styles.modalLabel}>Nama Rak</Text>
+            <Text style={styles.modalLabel}>Nama Rak *</Text>
             <TextInput
               style={styles.modalInput}
               value={newCollectionName}
               onChangeText={setNewCollectionName}
-              placeholder="Contoh: Bacaan Santai..."
+              placeholder="Contoh: Kuliah, Novel Favorit, dll."
               placeholderTextColor="#64748b"
             />
 
@@ -135,9 +143,10 @@ export default function CollectionsScreen() {
               style={[styles.modalInput, styles.textArea]}
               value={newCollectionDesc}
               onChangeText={setNewCollectionDesc}
-              placeholder="Buku-buku untuk dibaca saat santai..."
+              placeholder="Berikan penjelasan singkat mengenai rak ini..."
               placeholderTextColor="#64748b"
               multiline
+              numberOfLines={3}
             />
 
             <View style={styles.modalActionRow}>
@@ -145,7 +154,7 @@ export default function CollectionsScreen() {
                 <Text style={styles.modalCancelText}>Batal</Text>
               </Pressable>
               <Pressable style={styles.modalSaveBtn} onPress={handleAddCollection}>
-                <Text style={styles.modalSaveText}>Simpan</Text>
+                <Text style={styles.modalSaveText}>Simpan Rak</Text>
               </Pressable>
             </View>
           </View>
@@ -159,29 +168,119 @@ export default function CollectionsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#020617' },
   scrollContent: { paddingBottom: 40 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 },
-  title: { color: '#f8fafc', fontSize: 28, fontWeight: 'bold' },
-  addButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#818cf8', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, gap: 6 },
-  addButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '600' },
+  header: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingHorizontal: 24, 
+    paddingTop: 20, 
+    paddingBottom: 24 
+  },
+  title: { color: '#f8fafc', fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 },
+  subtitle: { color: '#94a3b8', fontSize: 14, fontWeight: '500', marginBottom: 4 },
+  addButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#3730a3', 
+    paddingHorizontal: 16, 
+    paddingVertical: 10, 
+    borderRadius: 14, 
+    gap: 6,
+    borderWidth: 1,
+    borderColor: '#818cf8'
+  },
+  addButtonText: { color: '#e0e7ff', fontSize: 14, fontWeight: '600' },
   
-  emptyContainer: { alignItems: 'center', justifyContent: 'center', marginTop: 80, paddingHorizontal: 40 },
-  emptyText: { color: '#cbd5e1', fontSize: 18, fontWeight: 'bold', marginTop: 16 },
-  emptySubText: { color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 8 },
+  emptyContainer: { 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginTop: 60, 
+    paddingHorizontal: 40,
+    backgroundColor: '#0f172a',
+    marginHorizontal: 24,
+    borderRadius: 24,
+    paddingVertical: 40,
+    borderWidth: 1,
+    borderColor: '#1e293b'
+  },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#020617',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#1e293b'
+  },
+  emptyText: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginTop: 8 },
+  emptySubText: { color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 },
+  emptyButton: {
+    backgroundColor: '#818cf8',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 24
+  },
+  emptyButtonText: { color: '#ffffff', fontWeight: 'bold', fontSize: 14 },
 
   collectionsList: { paddingHorizontal: 24, gap: 16 },
-  collectionCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#0f172a', padding: 16, borderRadius: 16, borderWidth: 1, borderColor: '#1e293b' },
-  collectionIconContainer: { width: 56, height: 56, backgroundColor: '#1e293b', borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 16 },
+  collectionCard: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#0f172a', 
+    padding: 16, 
+    borderRadius: 20, 
+    borderWidth: 1, 
+    borderColor: '#1e293b' 
+  },
+  collectionIconContainer: { 
+    width: 56, 
+    height: 56, 
+    backgroundColor: '#020617', 
+    borderRadius: 14, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginRight: 16,
+    borderWidth: 1,
+    borderColor: '#1e293b'
+  },
   collectionInfo: { flex: 1 },
   collectionName: { color: '#f8fafc', fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
-  collectionCount: { color: '#94a3b8', fontSize: 14 },
+  collectionCount: { color: '#64748b', fontSize: 13, fontWeight: '600' },
   deleteButton: { padding: 8 },
 
   // Modal Styles
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(2, 6, 23, 0.8)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#0f172a', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, borderWidth: 1, borderColor: '#1e293b', borderBottomWidth: 0 },
-  modalTitle: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+  modalOverlay: { 
+    flex: 1, 
+    backgroundColor: 'rgba(2, 6, 23, 0.85)', 
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24
+  },
+  modalContent: { 
+    width: '100%',
+    backgroundColor: '#0f172a', 
+    borderRadius: 24, 
+    padding: 24, 
+    borderWidth: 1, 
+    borderColor: '#1e293b'
+  },
+  modalTitle: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   modalLabel: { color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 8 },
-  modalInput: { backgroundColor: '#020617', color: '#f8fafc', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: '#1e293b', fontSize: 16, marginBottom: 20, outlineStyle: 'none' },
+  modalInput: { 
+    backgroundColor: '#020617', 
+    color: '#f8fafc', 
+    paddingHorizontal: 16, 
+    paddingVertical: 12, 
+    borderRadius: 12, 
+    borderWidth: 1, 
+    borderColor: '#1e293b', 
+    fontSize: 16, 
+    marginBottom: 20, 
+    outlineStyle: 'none' 
+  },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   modalActionRow: { flexDirection: 'row', gap: 12, marginTop: 8 },
   modalCancelBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#1e293b' },
