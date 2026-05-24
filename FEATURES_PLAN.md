@@ -214,8 +214,8 @@ Phase 3 — Enhancements (Week 5-6)
   🚧 Timer Baca & Target Baca
 
 Phase 4 — Polish (Week 7+)
-  🚧 Profil & Avatar
-  🚧 Export CSV/JSON
+  ✅ Profil & Avatar
+  ✅ Export CSV/JSON
   🚧 Notifikasi Pengingat
   🚧 Badge & Milestones
 ```

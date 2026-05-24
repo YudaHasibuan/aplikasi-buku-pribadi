@@ -33,6 +33,10 @@ export const initDb = async () => {
         FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
         FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
       );
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+      );
     `);
     
     // Add columns if they don't exist (for existing databases)
@@ -43,6 +47,18 @@ export const initDb = async () => {
       await db.execAsync(`ALTER TABLE books ADD COLUMN pdf_uri TEXT;`);
     } catch (e) {}
   }
+};
+
+// --- Settings / Profile ---
+export const getSetting = async (key: string, defaultValue: string = ''): Promise<string> => {
+  if (!db) await initDb();
+  const row = await db!.getFirstAsync<{value: string}>('SELECT value FROM settings WHERE key = ?', [key]);
+  return row ? row.value : defaultValue;
+};
+
+export const setSetting = async (key: string, value: string) => {
+  if (!db) await initDb();
+  await db!.runAsync('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)', [key, value]);
 };
 
 export interface Book {

@@ -11,15 +11,16 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#818cf8',
-        tabBarInactiveTintColor: '#6b7280',
+        tabBarActiveTintColor: '#7C3AED',
+        tabBarInactiveTintColor: '#94a3b8',
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0f172a',
-          borderTopWidth: 0,
+          backgroundColor: '#ffffff',
+          borderTopColor: '#EDE9FE',
+          borderTopWidth: 1,
           elevation: 0,
-          height: Platform.OS === 'ios' ? 88 : 60,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          height: Platform.OS === 'ios' ? 88 : 65,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
           paddingTop: 8,
         },
       }}>
@@ -49,6 +50,13 @@ export default function TabLayout() {
         options={{
           title: 'Stats & Hub',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profil',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.circle.fill" color={color} />,
         }}
       />
     </Tabs>

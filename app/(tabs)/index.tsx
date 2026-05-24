@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useState, useCallback } from 'react';
 import { useFocusEffect, Link } from 'expo-router';
-import { getAllBooks, Book, initDb } from '@/database/db';
+import { getAllBooks, Book, initDb, getSetting } from '@/database/db';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -13,6 +13,8 @@ export default function LibraryScreen() {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Semua'); // 'Semua', 'Sedang Dibaca', 'Selesai', 'Ingin Baca', 'Favorit'
+  const [userName, setUserName] = useState('Perpustakaanku');
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -21,7 +23,14 @@ export default function LibraryScreen() {
         try {
           await initDb();
           const data = await getAllBooks();
-          if (isActive) setBooks(data);
+          const name = await getSetting('userName', 'Perpustakaanku');
+          const avatar = await getSetting('userAvatar', '');
+          
+          if (isActive) {
+            setBooks(data);
+            setUserName(name);
+            if (avatar) setUserAvatar(avatar);
+          }
         } catch (error) {
           console.error('Failed to fetch books', error);
         }
@@ -70,13 +79,16 @@ export default function LibraryScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>{getGreeting()}</Text>
-            <Text style={styles.title}>Perpustakaanku</Text>
+            <Text style={styles.title}>{userName}</Text>
           </View>
           <View style={styles.avatarContainer}>
-            <Image 
-              source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop' }} 
-              style={styles.avatar} 
-            />
+            {userAvatar ? (
+              <Image source={{ uri: userAvatar }} style={styles.avatar} />
+            ) : (
+              <View style={[styles.avatar, { backgroundColor: '#EDE9FE', justifyContent: 'center', alignItems: 'center' }]}>
+                <IconSymbol name="person.fill" size={24} color="#7C3AED" />
+              </View>
+            )}
           </View>
         </View>
 
