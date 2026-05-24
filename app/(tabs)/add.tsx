@@ -66,8 +66,9 @@ export default function AddBookScreen() {
       Alert.alert('Sukses', 'Buku berhasil ditambahkan ke koleksi!');
       router.replace('/');
       setTitle(''); setAuthor(''); setGenre(''); setSynopsis(''); setCover(null); setPdfUri(null); setPdfName(null);
-    } catch (error) {
-      Alert.alert('Error', 'Gagal menyimpan buku');
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert('Error', 'Gagal menyimpan buku: ' + (error?.message || String(error)));
     }
   };
 
