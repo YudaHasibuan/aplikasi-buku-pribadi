@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -36,9 +36,21 @@ export default function AddBookScreen() {
 
   const pickPdf = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf', copyToCopyDirectory: true });
+      const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf', copyToCacheDirectory: true });
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        setPdfUri(result.assets[0].uri);
+        let uri = result.assets[0].uri;
+        // On web, blob URIs expire on reload. Convert to base64 Data URI before saving.
+        if (Platform.OS === 'web' && result.assets[0].file) {
+          const file = result.assets[0].file;
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+          uri = base64;
+        }
+        setPdfUri(uri);
         setPdfName(result.assets[0].name);
       }
     } catch (err) {

@@ -148,8 +148,9 @@ export default function PdfReaderScreen() {
         }
 
         let base64 = '';
-        if (Platform.OS === 'web') {
-          // On web, pdf_uri is usually an object URL or data URI
+        if (b.pdf_uri.startsWith('data:')) {
+          base64 = b.pdf_uri.split(',')[1];
+        } else if (Platform.OS === 'web') {
           const response = await fetch(b.pdf_uri);
           const blob = await response.blob();
           base64 = await new Promise((resolve, reject) => {
