@@ -124,6 +124,15 @@ export default function BookDetailScreen() {
             <View style={{ height: '100%', backgroundColor: t.accent, borderRadius: 4, width: `${book.progress || 0}%` } as any} />
           </View>
 
+          {/* Read Book Button */}
+          <Pressable
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#7A5C3D', paddingVertical: 16, borderRadius: 14, marginBottom: 20, gap: 10, shadowColor: '#7A5C3D', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}
+            onPress={() => router.push(`/book/read/${id}`)}
+          >
+            <IconSymbol name="books.vertical.fill" size={22} color="#FBF8F3" />
+            <Text style={{ color: '#FBF8F3', fontSize: 17, fontWeight: 'bold', letterSpacing: 0.5 }}>📖 Baca Buku</Text>
+          </Pressable>
+
           {/* Actions */}
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
             <Pressable style={{ flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: t.accent, shadowColor: t.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 3 }} onPress={openProgressModal}>
