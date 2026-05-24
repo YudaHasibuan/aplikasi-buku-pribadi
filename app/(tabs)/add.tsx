@@ -187,7 +187,7 @@ export default function AddBookScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f9ff' },
+  container: { flex: 1, backgroundColor: '#e2e8f0' },
   scrollContent: { padding: 24, paddingBottom: 40 },
   header: { 
     marginBottom: 28, 

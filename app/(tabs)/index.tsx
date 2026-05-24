@@ -210,7 +210,7 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f9ff', // Light Ice Blue
+    backgroundColor: '#e2e8f0', // Soft Gray Blue
   },
   scrollContent: {
     paddingBottom: 40,

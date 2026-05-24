@@ -252,9 +252,9 @@ export default function BookDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, backgroundColor: '#f0f9ff', justifyContent: 'center', alignItems: 'center' },
+  loadingContainer: { flex: 1, backgroundColor: '#e2e8f0', justifyContent: 'center', alignItems: 'center' },
   loadingText: { color: '#64748b', fontSize: 16 },
-  container: { flex: 1, backgroundColor: '#f0f9ff' },
+  container: { flex: 1, backgroundColor: '#e2e8f0' },
   scrollContent: { paddingBottom: 40 },
   coverContainer: { width: '100%', height: 320, backgroundColor: '#e0f2fe' },
   coverImage: { width: '100%', height: '100%' },
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   infoContainer: { 
     padding: 24, 
     marginTop: -20, 
-    backgroundColor: '#f0f9ff', 
+    backgroundColor: '#e2e8f0', 
     borderTopLeftRadius: 24, 
     borderTopRightRadius: 24,
     shadowColor: '#0284c7',

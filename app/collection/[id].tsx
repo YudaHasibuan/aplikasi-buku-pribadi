@@ -158,7 +158,7 @@ export default function CollectionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f9ff' },
+  container: { flex: 1, backgroundColor: '#e2e8f0' },
   emptyContainer: { 
     flex: 1, 
     justifyContent: 'center', 

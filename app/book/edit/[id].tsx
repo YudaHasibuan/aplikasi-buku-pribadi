@@ -196,9 +196,9 @@ export default function EditBookScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, backgroundColor: '#f0f9ff', justifyContent: 'center', alignItems: 'center' },
+  loadingContainer: { flex: 1, backgroundColor: '#e2e8f0', justifyContent: 'center', alignItems: 'center' },
   loadingText: { color: '#64748b', fontSize: 16 },
-  container: { flex: 1, backgroundColor: '#f0f9ff' },
+  container: { flex: 1, backgroundColor: '#e2e8f0' },
   scrollContent: { padding: 24, paddingBottom: 40 },
   coverUpload: {
     width: 150, 
