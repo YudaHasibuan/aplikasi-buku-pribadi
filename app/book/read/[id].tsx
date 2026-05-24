@@ -4,7 +4,7 @@ import {
   Platform, StatusBar, Dimensions, Animated
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { getBookById, Book, updateBook } from '@/database/db';
 import { useTheme } from '@/contexts/ThemeContext';

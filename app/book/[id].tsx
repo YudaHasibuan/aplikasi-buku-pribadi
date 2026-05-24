@@ -5,7 +5,7 @@ import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { getBookById, deleteBook, updateBook, Book } from '@/database/db';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import * as IntentLauncher from 'expo-intent-launcher';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Linking from 'expo-linking';
 import { useTheme } from '@/contexts/ThemeContext';
 

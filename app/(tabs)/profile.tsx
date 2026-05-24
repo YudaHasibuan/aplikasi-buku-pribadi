@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getSetting, setSetting, getAllBooks, getCollections } from '@/database/db';
 import { useFocusEffect } from 'expo-router';
