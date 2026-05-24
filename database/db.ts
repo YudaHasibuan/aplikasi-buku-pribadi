@@ -1,53 +1,66 @@
 import * as SQLite from 'expo-sqlite';
 
 let db: SQLite.SQLiteDatabase | null = null;
+// Promise guard: prevents concurrent initDb calls from opening DB multiple times
+let initPromise: Promise<void> | null = null;
 
-// Initialize database
-export const initDb = async () => {
-  if (!db) {
-    db = await SQLite.openDatabaseAsync('books.db');
-    await db.execAsync(`
-      PRAGMA journal_mode = WAL;
-      CREATE TABLE IF NOT EXISTS books (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        author TEXT NOT NULL,
-        genre TEXT,
-        cover TEXT,
-        progress INTEGER DEFAULT 0,
-        status TEXT DEFAULT 'Ingin Baca',
-        rating INTEGER DEFAULT 0,
-        synopsis TEXT,
-        is_favorite INTEGER DEFAULT 0,
-        pdf_uri TEXT
-      );
-      CREATE TABLE IF NOT EXISTS collections (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        description TEXT
-      );
-      CREATE TABLE IF NOT EXISTS collection_books (
-        collection_id INTEGER,
-        book_id INTEGER,
-        PRIMARY KEY (collection_id, book_id),
-        FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
-        FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
-      );
-      CREATE TABLE IF NOT EXISTS settings (
-        key TEXT PRIMARY KEY,
-        value TEXT
-      );
-    `);
-    
-    // Add columns if they don't exist (for existing databases)
+// Initialize database — safe for concurrent calls
+export const initDb = async (): Promise<void> => {
+  // Already initialized
+  if (db) return;
+  // Already initializing — wait for the in-flight promise
+  if (initPromise) return initPromise;
+
+  initPromise = (async () => {
     try {
-      await db.execAsync(`ALTER TABLE books ADD COLUMN is_favorite INTEGER DEFAULT 0;`);
-    } catch (e) {}
-    try {
-      await db.execAsync(`ALTER TABLE books ADD COLUMN pdf_uri TEXT;`);
-    } catch (e) {}
-  }
+      db = await SQLite.openDatabaseAsync('books.db');
+      await db.execAsync(`
+        PRAGMA journal_mode = WAL;
+        CREATE TABLE IF NOT EXISTS books (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT NOT NULL,
+          author TEXT NOT NULL,
+          genre TEXT,
+          cover TEXT,
+          progress INTEGER DEFAULT 0,
+          status TEXT DEFAULT 'Ingin Baca',
+          rating INTEGER DEFAULT 0,
+          synopsis TEXT,
+          is_favorite INTEGER DEFAULT 0,
+          pdf_uri TEXT
+        );
+        CREATE TABLE IF NOT EXISTS collections (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          description TEXT
+        );
+        CREATE TABLE IF NOT EXISTS collection_books (
+          collection_id INTEGER,
+          book_id INTEGER,
+          PRIMARY KEY (collection_id, book_id),
+          FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
+          FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+        );
+        CREATE TABLE IF NOT EXISTS settings (
+          key TEXT PRIMARY KEY,
+          value TEXT
+        );
+      `);
+
+      // Migrate existing databases safely
+      try { await db.execAsync(`ALTER TABLE books ADD COLUMN is_favorite INTEGER DEFAULT 0;`); } catch (e) {}
+      try { await db.execAsync(`ALTER TABLE books ADD COLUMN pdf_uri TEXT;`); } catch (e) {}
+    } catch (e) {
+      // Reset so caller can retry
+      db = null;
+      initPromise = null;
+      throw e;
+    }
+  })();
+
+  return initPromise;
 };
+
 
 // --- Settings / Profile ---
 export const getSetting = async (key: string, defaultValue: string = ''): Promise<string> => {
