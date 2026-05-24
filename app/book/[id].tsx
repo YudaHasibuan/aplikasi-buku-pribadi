@@ -124,14 +124,16 @@ export default function BookDetailScreen() {
             <View style={{ height: '100%', backgroundColor: t.accent, borderRadius: 4, width: `${book.progress || 0}%` } as any} />
           </View>
 
-          {/* Read Book Button */}
-          <Pressable
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#7A5C3D', paddingVertical: 16, borderRadius: 14, marginBottom: 20, gap: 10, shadowColor: '#7A5C3D', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }}
-            onPress={() => router.push(`/book/read/${id}`)}
-          >
-            <IconSymbol name="books.vertical.fill" size={22} color="#FBF8F3" />
-            <Text style={{ color: '#FBF8F3', fontSize: 17, fontWeight: 'bold', letterSpacing: 0.5 }}>📖 Baca Buku</Text>
-          </Pressable>
+          {/* Read PDF Button — only shown if book has PDF */}
+          {book.pdf_uri ? (
+            <Pressable
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#5C3D1E', paddingVertical: 16, borderRadius: 14, marginBottom: 20, gap: 10, shadowColor: '#5C3D1E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 5 }}
+              onPress={() => router.push(`/book/read/${id}`)}
+            >
+              <IconSymbol name="doc.fill" size={22} color="#FBF8F3" />
+              <Text style={{ color: '#FBF8F3', fontSize: 17, fontWeight: 'bold', letterSpacing: 0.5 }}>📖 Baca E-Book</Text>
+            </Pressable>
+          ) : null}
 
           {/* Actions */}
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
