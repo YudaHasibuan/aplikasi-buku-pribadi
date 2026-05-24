@@ -44,16 +44,6 @@ export default function EditBookScreen() {
       const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf', copyToCacheDirectory: true });
       if (!result.canceled && result.assets && result.assets.length > 0) {
         let uri = result.assets[0].uri;
-        if (Platform.OS === 'web' && result.assets[0].file) {
-          const file = result.assets[0].file;
-          const base64 = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-          uri = base64;
-        }
         setPdfUri(uri);
       }
     } catch (err) { Alert.alert('Error', 'Gagal memilih file PDF'); }

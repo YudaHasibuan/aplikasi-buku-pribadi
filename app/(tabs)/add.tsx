@@ -39,17 +39,6 @@ export default function AddBookScreen() {
       const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf', copyToCacheDirectory: true });
       if (!result.canceled && result.assets && result.assets.length > 0) {
         let uri = result.assets[0].uri;
-        // On web, blob URIs expire on reload. Convert to base64 Data URI before saving.
-        if (Platform.OS === 'web' && result.assets[0].file) {
-          const file = result.assets[0].file;
-          const base64 = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-          uri = base64;
-        }
         setPdfUri(uri);
         setPdfName(result.assets[0].name);
       }
