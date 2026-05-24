@@ -147,10 +147,25 @@ export default function PdfReaderScreen() {
           return;
         }
 
-        // Read PDF as base64 — works for local files on all platforms
-        const base64 = await FileSystem.readAsStringAsync(b.pdf_uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+        let base64 = '';
+        if (Platform.OS === 'web') {
+          // On web, pdf_uri is usually an object URL or data URI
+          const response = await fetch(b.pdf_uri);
+          const blob = await response.blob();
+          base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const dataUrl = reader.result as string;
+              resolve(dataUrl.split(',')[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } else {
+          base64 = await FileSystem.readAsStringAsync(b.pdf_uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+        }
 
         setHtmlContent(buildHtml(base64));
         setLoading(false);
