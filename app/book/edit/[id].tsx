@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, ScrollView, Platform, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -7,11 +7,12 @@ import { Image } from 'expo-image';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getBookById, updateBook, Book } from '@/database/db';
 import { router, useLocalSearchParams, Stack } from 'expo-router';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function EditBookScreen() {
+  const { theme: t } = useTheme();
   const { id } = useLocalSearchParams();
   const [book, setBook] = useState<Book | null>(null);
-
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [genre, setGenre] = useState('');
@@ -24,13 +25,9 @@ export default function EditBookScreen() {
       if (id) {
         const data = await getBookById(Number(id));
         if (data) {
-          setBook(data);
-          setTitle(data.title);
-          setAuthor(data.author);
-          setGenre(data.genre || '');
-          setSynopsis(data.synopsis || '');
-          setCover(data.cover || null);
-          setPdfUri(data.pdf_uri || null);
+          setBook(data); setTitle(data.title); setAuthor(data.author);
+          setGenre(data.genre || ''); setSynopsis(data.synopsis || '');
+          setCover(data.cover || null); setPdfUri(data.pdf_uri || null);
         }
       }
     };
@@ -38,247 +35,84 @@ export default function EditBookScreen() {
   }, [id]);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [2, 3],
-      quality: 0.7,
-    });
-
-    if (!result.canceled) {
-      setCover(result.assets[0].uri);
-    }
+    let result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [2, 3], quality: 0.7 });
+    if (!result.canceled) setCover(result.assets[0].uri);
   };
 
   const pickPdf = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setPdfUri(result.assets[0].uri);
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Gagal memilih file PDF');
-    }
+      const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf', copyToCacheDirectory: true });
+      if (!result.canceled && result.assets && result.assets.length > 0) setPdfUri(result.assets[0].uri);
+    } catch (err) { Alert.alert('Error', 'Gagal memilih file PDF'); }
   };
 
   const handleSave = async () => {
-    if (!title || !author) {
-      Alert.alert('Error', 'Judul dan Penulis wajib diisi!');
-      return;
-    }
-
+    if (!title || !author) { Alert.alert('Error', 'Judul dan Penulis wajib diisi!'); return; }
     if (book && id) {
-      const updatedBook: Book = {
-        ...book,
-        title,
-        author,
-        genre,
-        synopsis,
-        cover: cover || '',
-        pdf_uri: pdfUri || '',
-      };
-
+      const updated: Book = { ...book, title, author, genre, synopsis, cover: cover || '', pdf_uri: pdfUri || '' };
       try {
-        await updateBook(Number(id), updatedBook);
+        await updateBook(Number(id), updated);
         Alert.alert('Sukses', 'Data buku berhasil diperbarui!');
         router.back();
-      } catch (error) {
-        console.error(error);
-        Alert.alert('Error', 'Gagal memperbarui buku');
-      }
+      } catch (error) { Alert.alert('Error', 'Gagal memperbarui buku'); }
     }
   };
 
-  if (!book) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Memuat buku...</Text>
-      </View>
-    );
-  }
+  if (!book) return <View style={{ flex: 1, backgroundColor: t.bg, justifyContent: 'center', alignItems: 'center' }}><Text style={{ color: t.textMuted }}>Memuat buku...</Text></View>;
+
+  const inputStyle: any = { backgroundColor: t.card, color: t.text, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 14, borderWidth: 1, borderColor: t.accentBorder, fontSize: 16, outlineStyle: 'none' };
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: 'Edit Buku',
-          headerStyle: { backgroundColor: '#ffffff' },
-          headerTintColor: '#0f172a',
-        }} 
-      />
-      <SafeAreaView style={styles.container} edges={['bottom']}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          
-          {/* Cover Upload Box */}
-          <Pressable style={styles.coverUpload} onPress={pickImage}>
+      <Stack.Screen options={{ title: 'Edit Buku', headerStyle: { backgroundColor: t.card }, headerTintColor: t.text }} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} edges={['bottom']}>
+        <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+
+          {/* Cover */}
+          <Pressable style={{ width: 150, height: 220, backgroundColor: t.card, borderRadius: 20, borderWidth: 2, borderColor: t.accentBorder, borderStyle: 'dashed', alignSelf: 'center', marginBottom: 28, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }} onPress={pickImage}>
             {cover ? (
-              <Image source={{ uri: cover }} style={styles.coverImage} />
+              <Image source={{ uri: cover }} style={{ width: '100%', height: '100%' }} />
             ) : (
-              <View style={styles.coverPlaceholder}>
-                <View style={styles.cameraIconContainer}>
-                  <IconSymbol name="camera" size={28} color="#7C3AED" />
+              <View style={{ alignItems: 'center', padding: 16 }}>
+                <View style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: t.accentLight, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <IconSymbol name="camera" size={28} color={t.accent} />
                 </View>
-                <Text style={styles.coverText}>Ganti Cover Buku</Text>
-                <Text style={styles.coverSubtext}>Rekomendasi rasio 2:3</Text>
+                <Text style={{ color: t.text, fontSize: 14, fontWeight: 'bold' }}>Ganti Cover</Text>
               </View>
             )}
           </Pressable>
 
-          {/* Form Fields */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Judul Buku *</Text>
-            <TextInput 
-              style={styles.input} 
-              value={title} 
-              onChangeText={setTitle} 
-              placeholder="Masukkan judul buku..." 
-              placeholderTextColor="#94a3b8" 
-            />
-          </View>
+          {[
+            { label: 'Judul Buku *', value: title, setter: setTitle, placeholder: 'Masukkan judul buku...' },
+            { label: 'Penulis *', value: author, setter: setAuthor, placeholder: 'Nama penulis...' },
+            { label: 'Genre', value: genre, setter: setGenre, placeholder: 'Fiksi, Sains, Sejarah, dll.' },
+          ].map(field => (
+            <View key={field.label} style={{ marginBottom: 20 }}>
+              <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>{field.label}</Text>
+              <TextInput style={inputStyle} value={field.value} onChangeText={field.setter} placeholder={field.placeholder} placeholderTextColor={t.textMuted} />
+            </View>
+          ))}
 
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Penulis *</Text>
-            <TextInput 
-              style={styles.input} 
-              value={author} 
-              onChangeText={setAuthor} 
-              placeholder="Nama penulis..." 
-              placeholderTextColor="#94a3b8" 
-            />
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Genre</Text>
-            <TextInput 
-              style={styles.input} 
-              value={genre} 
-              onChangeText={setGenre} 
-              placeholder="Contoh: Fiction, Science, dll." 
-              placeholderTextColor="#94a3b8" 
-            />
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Berkas E-Book (PDF)</Text>
-            <Pressable style={styles.pdfUploadBtn} onPress={pickPdf}>
-              <IconSymbol name="doc.fill" size={20} color={pdfUri ? "#10b981" : "#94a3b8"} />
-              <Text style={[styles.pdfUploadText, pdfUri && { color: '#10b981', fontWeight: 'bold' }]} numberOfLines={1}>
-                {pdfUri ? 'File PDF Terlampir' : 'Pilih File PDF Baru'}
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Berkas E-Book (PDF)</Text>
+            <Pressable style={[inputStyle, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} onPress={pickPdf}>
+              <IconSymbol name="doc.fill" size={20} color={pdfUri ? '#10b981' : t.textMuted} />
+              <Text style={{ color: pdfUri ? '#10b981' : t.textMuted, fontSize: 16, flex: 1, fontWeight: pdfUri ? 'bold' : 'normal' }} numberOfLines={1}>
+                {pdfUri ? 'File PDF Terlampir ✓' : 'Pilih File PDF Baru'}
               </Text>
             </Pressable>
           </View>
 
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Sinopsis (Opsional)</Text>
-            <TextInput 
-              style={[styles.input, styles.textArea]} 
-              value={synopsis} 
-              onChangeText={setSynopsis} 
-              placeholder="Tuliskan sinopsis singkat..." 
-              placeholderTextColor="#94a3b8" 
-              multiline 
-              numberOfLines={4} 
-            />
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Sinopsis (Opsional)</Text>
+            <TextInput style={[inputStyle, { minHeight: 100, textAlignVertical: 'top' }]} value={synopsis} onChangeText={setSynopsis} placeholder="Tuliskan sinopsis singkat..." placeholderTextColor={t.textMuted} multiline numberOfLines={4} />
           </View>
 
-          <Pressable style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Simpan Perubahan</Text>
+          <Pressable style={{ backgroundColor: t.accent, paddingVertical: 16, borderRadius: 14, alignItems: 'center', marginTop: 16, shadowColor: t.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 10, elevation: 6 }} onPress={handleSave}>
+            <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }}>Simpan Perubahan</Text>
           </Pressable>
         </ScrollView>
       </SafeAreaView>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, backgroundColor: '#F5F3FF', justifyContent: 'center', alignItems: 'center' },
-  loadingText: { color: '#64748b', fontSize: 16 },
-  container: { flex: 1, backgroundColor: '#F5F3FF' },
-  scrollContent: { padding: 24, paddingBottom: 40 },
-  coverUpload: {
-    width: 150, 
-    height: 220, 
-    backgroundColor: '#ffffff',
-    borderRadius: 20, 
-    borderWidth: 2, 
-    borderColor: '#EDE9FE',
-    borderStyle: 'dashed', 
-    alignSelf: 'center', 
-    marginBottom: 28,
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    overflow: 'hidden',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.04,
-    shadowRadius: 15,
-    elevation: 4
-  },
-  coverImage: { width: '100%', height: '100%' },
-  coverPlaceholder: { alignItems: 'center', padding: 16 },
-  cameraIconContainer: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: '#EDE9FE',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  coverText: { color: '#0f172a', fontSize: 14, fontWeight: 'bold' },
-  coverSubtext: { color: '#64748b', fontSize: 11, marginTop: 4 },
-  formGroup: { marginBottom: 20 },
-  label: { color: '#334155', fontSize: 14, fontWeight: '600', marginBottom: 8 },
-  input: {
-    backgroundColor: '#ffffff', 
-    color: '#0f172a', 
-    paddingHorizontal: 16,
-    paddingVertical: 14, 
-    borderRadius: 14, 
-    borderWidth: 1, 
-    borderColor: '#EDE9FE',
-    fontSize: 16, 
-    outlineStyle: 'none',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1
-  },
-  pdfUploadBtn: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    backgroundColor: '#ffffff', 
-    paddingHorizontal: 16, 
-    paddingVertical: 14, 
-    borderRadius: 14, 
-    borderWidth: 1, 
-    borderColor: '#e0f2fe', 
-    gap: 12,
-    shadowColor: '#0284c7',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 6,
-    elevation: 1
-  },
-  pdfUploadText: { color: '#64748b', fontSize: 16, flex: 1 },
-  textArea: { minHeight: 100, textAlignVertical: 'top' },
-  saveButton: {
-    backgroundColor: '#0284c7', 
-    paddingVertical: 16, 
-    borderRadius: 14,
-    alignItems: 'center', 
-    marginTop: 16,
-    shadowColor: '#0284c7',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 6
-  },
-  saveButtonText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' }
-});

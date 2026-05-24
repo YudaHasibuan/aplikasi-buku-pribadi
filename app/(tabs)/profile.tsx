@@ -1,21 +1,21 @@
 import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getSetting, setSetting, getAllBooks, getCollections } from '@/database/db';
 import { useFocusEffect } from 'expo-router';
+import { useTheme, themes } from '@/contexts/ThemeContext';
 
 export default function ProfileScreen() {
+  const { theme: t, setThemeId } = useTheme();
   const [name, setName] = useState('Pembaca Setia');
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState('');
 
-  // Load profile from settings
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -48,7 +48,6 @@ export default function ProfileScreen() {
       aspect: [1, 1],
       quality: 0.5,
     });
-
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setAvatar(uri);
@@ -60,133 +59,155 @@ export default function ProfileScreen() {
     try {
       const books = await getAllBooks();
       const collections = await getCollections();
-      
-      const backupData = {
-        exportedAt: new Date().toISOString(),
-        books,
-        collections
-      };
-
+      const backupData = { exportedAt: new Date().toISOString(), books, collections };
       const jsonString = JSON.stringify(backupData, null, 2);
       const fileUri = FileSystem.documentDirectory + 'my_library_backup.json';
-      
       await FileSystem.writeAsStringAsync(fileUri, jsonString, { encoding: FileSystem.EncodingType.UTF8 });
-      
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri, {
-          mimeType: 'application/json',
-          dialogTitle: 'Export Backup Perpustakaan'
-        });
-      } else {
-        Alert.alert('Sukses', 'Data berhasil di-export ke storage internal.');
+
+      try {
+        const Sharing = require('expo-sharing');
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri, { mimeType: 'application/json', dialogTitle: 'Export Backup Perpustakaan' });
+        } else {
+          Alert.alert('Sukses', 'File backup tersimpan di storage internal.');
+        }
+      } catch (e) {
+        Alert.alert('Sukses', 'File backup tersimpan di: ' + fileUri);
       }
     } catch (error) {
-      console.error(error);
       Alert.alert('Error', 'Gagal melakukan export data.');
     }
   };
 
+  const themeList = Object.values(themes);
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
+    <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} edges={['top']}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Profil & Pengaturan</Text>
+        <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16 }}>
+          <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '500', marginBottom: 4 }}>Pengaturan Akun</Text>
+          <Text style={{ color: t.text, fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 }}>Profil & Tema</Text>
         </View>
 
         {/* Profile Card */}
-        <View style={styles.profileCard}>
-          <Pressable style={styles.avatarContainer} onPress={pickImage}>
+        <View style={[styles.card, { backgroundColor: t.card, borderColor: t.accentBorder, shadowColor: t.shadow, marginHorizontal: 24, marginBottom: 28, flexDirection: 'row', alignItems: 'center', padding: 20 }]}>
+          <Pressable style={{ position: 'relative', marginRight: 20 }} onPress={pickImage}>
             {avatar ? (
-              <Image source={{ uri: avatar }} style={styles.avatar} />
+              <Image source={{ uri: avatar }} style={{ width: 72, height: 72, borderRadius: 36, borderWidth: 2, borderColor: t.accent }} />
             ) : (
-              <View style={[styles.avatar, { backgroundColor: '#EDE9FE', justifyContent: 'center', alignItems: 'center' }]}>
-                <IconSymbol name="person.fill" size={40} color="#7C3AED" />
+              <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: t.accentLight, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: t.accent }}>
+                <IconSymbol name="person.fill" size={32} color={t.accent} />
               </View>
             )}
-            <View style={styles.editAvatarBadge}>
-              <IconSymbol name="camera.fill" size={12} color="#ffffff" />
+            <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: t.accent, width: 24, height: 24, borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: t.card }}>
+              <IconSymbol name="camera.fill" size={11} color="#fff" />
             </View>
           </Pressable>
-          
-          <View style={styles.profileInfo}>
+
+          <View style={{ flex: 1 }}>
             {isEditingName ? (
-              <View style={styles.editNameContainer}>
-                <TextInput
-                  style={styles.nameInput}
-                  value={tempName}
-                  onChangeText={setTempName}
-                  autoFocus
-                  onSubmitEditing={handleSaveName}
-                  onBlur={handleSaveName}
-                />
-              </View>
+              <TextInput
+                style={{ fontSize: 20, fontWeight: 'bold', color: t.text, borderBottomWidth: 2, borderBottomColor: t.accent, paddingVertical: 2 }}
+                value={tempName}
+                onChangeText={setTempName}
+                autoFocus
+                onSubmitEditing={handleSaveName}
+                onBlur={handleSaveName}
+              />
             ) : (
-              <View style={styles.nameContainer}>
-                <Text style={styles.userName}>{name}</Text>
-                <Pressable onPress={() => setIsEditingName(true)} style={styles.editNameBtn}>
-                  <IconSymbol name="pencil" size={16} color="#7C3AED" />
-                </Pressable>
-              </View>
+              <Pressable style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => setIsEditingName(true)}>
+                <Text style={{ color: t.text, fontSize: 20, fontWeight: 'bold', marginRight: 8 }}>{name}</Text>
+                <IconSymbol name="pencil" size={16} color={t.accent} />
+              </Pressable>
             )}
-            <Text style={styles.userBio}>Pecinta Buku</Text>
+            <Text style={{ color: t.textMuted, fontSize: 13, marginTop: 4 }}>Ketuk ikon 📷 untuk ganti foto</Text>
           </View>
         </View>
 
-        {/* Settings Sections */}
-        <Text style={styles.sectionTitle}>Data & Backup</Text>
-        <View style={styles.settingsGroup}>
-          <Pressable style={styles.settingItem} onPress={handleExportJson}>
-            <View style={[styles.settingIcon, { backgroundColor: '#EDE9FE' }]}>
-              <IconSymbol name="arrow.down.doc.fill" size={20} color="#7C3AED" />
+        {/* Theme Switcher */}
+        <Text style={{ paddingHorizontal: 24, color: t.textSecondary, fontSize: 13, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 14 }}>
+          Pilih Tema Aplikasi
+        </Text>
+        <View style={{ paddingHorizontal: 24, gap: 10, marginBottom: 28 }}>
+          {themeList.map((theme) => {
+            const isActive = t.id === theme.id;
+            return (
+              <Pressable
+                key={theme.id}
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor: t.card,
+                    borderColor: isActive ? theme.accent : t.accentBorder,
+                    shadowColor: t.shadow,
+                    borderWidth: isActive ? 2 : 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: 16,
+                  }
+                ]}
+                onPress={() => setThemeId(theme.id)}
+              >
+                {/* Color Preview Dots */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, gap: 6 }}>
+                  <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: theme.bg, borderWidth: 1, borderColor: '#e2e8f0' }} />
+                  <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: theme.accent }} />
+                  <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: theme.accentLight }} />
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: t.text, fontSize: 16, fontWeight: '700' }}>
+                    {theme.emoji} {theme.name}
+                  </Text>
+                  <Text style={{ color: t.textMuted, fontSize: 12, marginTop: 2 }}>
+                    {theme.isDark ? 'Mode Gelap' : 'Mode Terang'} · Aksen {theme.accent}
+                  </Text>
+                </View>
+
+                {isActive && (
+                  <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: theme.accent, justifyContent: 'center', alignItems: 'center' }}>
+                    <IconSymbol name="checkmark" size={14} color="#fff" />
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Data & Backup */}
+        <Text style={{ paddingHorizontal: 24, color: t.textSecondary, fontSize: 13, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 14 }}>
+          Data & Backup
+        </Text>
+        <View style={[styles.card, { backgroundColor: t.card, borderColor: t.accentBorder, shadowColor: t.shadow, marginHorizontal: 24, marginBottom: 28 }]}>
+          <Pressable style={styles.settingRow} onPress={handleExportJson}>
+            <View style={[styles.iconBox, { backgroundColor: t.accentLight }]}>
+              <IconSymbol name="arrow.down.doc.fill" size={20} color={t.accent} />
             </View>
-            <View style={styles.settingTextContent}>
-              <Text style={styles.settingTitle}>Export Data (JSON)</Text>
-              <Text style={styles.settingSubtext}>Backup koleksi buku & rak Anda</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: t.text, fontSize: 16, fontWeight: '600' }}>Export Data (JSON)</Text>
+              <Text style={{ color: t.textMuted, fontSize: 12, marginTop: 2 }}>Backup seluruh koleksi buku Anda</Text>
             </View>
-            <IconSymbol name="chevron.right" size={20} color="#cbd5e1" />
+            <IconSymbol name="chevron.right" size={18} color={t.textMuted} />
           </Pressable>
-          <View style={styles.divider} />
-          <Pressable style={styles.settingItem} onPress={() => Alert.alert('Info', 'Fitur Restore akan segera datang!')}>
-            <View style={[styles.settingIcon, { backgroundColor: '#fef3c7' }]}>
+          <View style={{ height: 1, backgroundColor: t.accentBorder, marginLeft: 68 }} />
+          <Pressable style={styles.settingRow} onPress={() => Alert.alert('Info', 'Fitur restore akan segera tersedia!')}>
+            <View style={[styles.iconBox, { backgroundColor: '#fef3c7' }]}>
               <IconSymbol name="arrow.up.doc.fill" size={20} color="#d97706" />
             </View>
-            <View style={styles.settingTextContent}>
-              <Text style={styles.settingTitle}>Restore Data</Text>
-              <Text style={styles.settingSubtext}>Kembalikan dari file backup</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: t.text, fontSize: 16, fontWeight: '600' }}>Restore Data</Text>
+              <Text style={{ color: t.textMuted, fontSize: 12, marginTop: 2 }}>Kembalikan dari file backup</Text>
             </View>
-            <IconSymbol name="chevron.right" size={20} color="#cbd5e1" />
+            <IconSymbol name="chevron.right" size={18} color={t.textMuted} />
           </Pressable>
         </View>
 
-        <Text style={styles.sectionTitle}>Preferensi</Text>
-        <View style={styles.settingsGroup}>
-          <Pressable style={styles.settingItem} onPress={() => Alert.alert('Info', 'Notifikasi sedang dalam pengembangan.')}>
-            <View style={[styles.settingIcon, { backgroundColor: '#fee2e2' }]}>
-              <IconSymbol name="bell.fill" size={20} color="#ef4444" />
-            </View>
-            <View style={styles.settingTextContent}>
-              <Text style={styles.settingTitle}>Pengingat Baca</Text>
-              <Text style={styles.settingSubtext}>Mati</Text>
-            </View>
-            <IconSymbol name="chevron.right" size={20} color="#cbd5e1" />
-          </Pressable>
-          <View style={styles.divider} />
-          <Pressable style={styles.settingItem}>
-            <View style={[styles.settingIcon, { backgroundColor: '#e0f2fe' }]}>
-              <IconSymbol name="moon.fill" size={20} color="#0284c7" />
-            </View>
-            <View style={styles.settingTextContent}>
-              <Text style={styles.settingTitle}>Tema Aplikasi</Text>
-              <Text style={styles.settingSubtext}>Soft Lavender (Terang)</Text>
-            </View>
-          </Pressable>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.versionText}>MyApp v1.0.0</Text>
-          <Text style={styles.madeWithText}>Dibuat dengan ❤️ untuk pembaca</Text>
+        {/* Footer */}
+        <View style={{ alignItems: 'center', marginTop: 16 }}>
+          <Text style={{ color: t.textMuted, fontSize: 13, fontWeight: 'bold', marginBottom: 4 }}>MyApp v1.0.0</Text>
+          <Text style={{ color: t.textMuted, fontSize: 11 }}>Dibuat dengan ❤️ untuk pembaca</Text>
         </View>
 
       </ScrollView>
@@ -195,81 +216,25 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F3FF' },
-  scrollContent: { paddingBottom: 40 },
-  header: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16 },
-  title: { color: '#0f172a', fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 },
-  
-  profileCard: {
-    marginHorizontal: 24,
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 24,
+  card: {
+    borderRadius: 20,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 32,
-    borderWidth: 1,
-    borderColor: '#EDE9FE',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.05,
-    shadowRadius: 16,
-    elevation: 4,
+    padding: 16,
   },
-  avatarContainer: { position: 'relative', marginRight: 20 },
-  avatar: { width: 72, height: 72, borderRadius: 36, borderWidth: 2, borderColor: '#7C3AED' },
-  editAvatarBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: '#7C3AED',
-    width: 24,
-    height: 24,
+  iconBox: {
+    width: 40,
+    height: 40,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#ffffff',
+    marginRight: 16,
   },
-  profileInfo: { flex: 1, justifyContent: 'center' },
-  nameContainer: { flexDirection: 'row', alignItems: 'center' },
-  userName: { color: '#0f172a', fontSize: 20, fontWeight: 'bold', marginRight: 8 },
-  editNameBtn: { padding: 4 },
-  editNameContainer: { marginBottom: 4 },
-  nameInput: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    borderBottomWidth: 1,
-    borderBottomColor: '#7C3AED',
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    minWidth: 150,
-  },
-  userBio: { color: '#64748b', fontSize: 14, marginTop: 4 },
-
-  sectionTitle: { paddingHorizontal: 24, color: '#475569', fontSize: 14, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 12, marginTop: 8 },
-  settingsGroup: {
-    marginHorizontal: 24,
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#EDE9FE',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.02,
-    shadowRadius: 8,
-    elevation: 1,
-  },
-  settingItem: { flexDirection: 'row', alignItems: 'center', padding: 16 },
-  settingIcon: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginRight: 16 },
-  settingTextContent: { flex: 1 },
-  settingTitle: { color: '#0f172a', fontSize: 16, fontWeight: '600', marginBottom: 2 },
-  settingSubtext: { color: '#64748b', fontSize: 13 },
-  divider: { height: 1, backgroundColor: '#f1f5f9', marginLeft: 72 },
-  
-  footer: { alignItems: 'center', marginTop: 40, marginBottom: 20 },
-  versionText: { color: '#94a3b8', fontSize: 14, fontWeight: 'bold', marginBottom: 4 },
-  madeWithText: { color: '#cbd5e1', fontSize: 12 },
 });

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { getAllBooks, Book } from '@/database/db';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -16,6 +17,8 @@ const INSPIRED_QUOTES = [
 ];
 
 export default function StatsHubScreen() {
+  const { theme: t } = useTheme();
+  const styles = makeStyles(t, isWeb);
   const [books, setBooks] = useState<Book[]>([]);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
@@ -207,206 +210,52 @@ export default function StatsHubScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F3FF', // Soft Gray Blue
-  },
-  scrollContent: {
-    paddingBottom: 40,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  title: {
-    color: '#0f172a', // Slate 900
-    fontSize: 32,
-    fontWeight: '800',
-    letterSpacing: -1,
-    marginBottom: 6,
-  },
-  subtitle: {
-    color: '#475569', // Slate 600
-    fontSize: 15,
-  },
+const makeStyles = (t: any, isWeb: boolean) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: t.bg },
+  scrollContent: { paddingBottom: 40 },
+  header: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16 },
+  title: { color: t.text, fontSize: 32, fontWeight: '800', letterSpacing: -1, marginBottom: 6 },
+  subtitle: { color: t.textSecondary, fontSize: 15 },
   quoteCard: {
-    backgroundColor: '#ffffff',
-    marginHorizontal: 24,
-    marginTop: 8,
-    marginBottom: 20,
-    padding: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#DDD6FE', // Soft Light Blue Border
-    borderStyle: 'dashed',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    backgroundColor: t.card, marginHorizontal: 24, marginTop: 8, marginBottom: 20, padding: 20,
+    borderRadius: 20, borderWidth: 1, borderColor: t.accentBorder, borderStyle: 'dashed',
+    shadowColor: t.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2,
   },
-  quoteText: {
-    color: '#0f172a',
-    fontSize: 15,
-    fontStyle: 'italic',
-    lineHeight: 22,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  quoteAuthor: {
-    color: '#7C3AED',
-    fontSize: 13,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 16,
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
+  quoteText: { color: t.text, fontSize: 15, fontStyle: 'italic', lineHeight: 22, textAlign: 'center', marginBottom: 8 },
+  quoteAuthor: { color: t.accent, fontSize: 13, fontWeight: '600', textAlign: 'center' },
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, justifyContent: 'space-between', marginBottom: 24 },
   statCard: {
-    width: isWeb ? '23%' : '47%',
-    marginHorizontal: '1.5%',
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#EDE9FE',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
-    elevation: 3,
+    width: isWeb ? '23%' : '47%', marginHorizontal: '1.5%', backgroundColor: t.card,
+    borderRadius: 20, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: t.accentBorder,
+    shadowColor: t.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 3,
   },
-  iconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  statNumber: {
-    color: '#0f172a',
-    fontSize: 24,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  statLabel: {
-    color: '#64748b',
-    fontSize: 13,
-    fontWeight: '600',
-  },
+  iconWrapper: { width: 48, height: 48, borderRadius: 14, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  statNumber: { color: t.text, fontSize: 24, fontWeight: '800', marginBottom: 4 },
+  statLabel: { color: t.textMuted, fontSize: 13, fontWeight: '600' },
   chartSection: {
-    backgroundColor: '#ffffff',
-    marginHorizontal: 24,
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#EDE9FE',
-    marginBottom: 24,
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.04,
-    shadowRadius: 16,
-    elevation: 4,
+    backgroundColor: t.card, marginHorizontal: 24, borderRadius: 24, padding: 20,
+    borderWidth: 1, borderColor: t.accentBorder, marginBottom: 24,
+    shadowColor: t.shadow, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 4,
   },
-  sectionTitle: {
-    color: '#0f172a',
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
-  },
-  emptyChart: {
-    paddingVertical: 30,
-    alignItems: 'center',
-  },
-  emptyChartText: {
-    color: '#64748b',
-    textAlign: 'center',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  chartBarContainer: {
-    height: 24,
-    backgroundColor: '#f1f5f9',
-    borderRadius: 12,
-    flexDirection: 'row',
-    overflow: 'hidden',
-    marginBottom: 24,
-  },
-  chartBarSegment: {
-    height: '100%',
-  },
-  legendContainer: {
-    gap: 12,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  legendIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 4,
-    marginRight: 12,
-  },
-  legendTextWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1,
-  },
-  legendName: {
-    color: '#334155',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  legendVal: {
-    color: '#64748b',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  habitsContainer: {
-    paddingHorizontal: 24,
-  },
+  sectionTitle: { color: t.text, fontSize: 20, fontWeight: '700', marginBottom: 16 },
+  emptyChart: { paddingVertical: 30, alignItems: 'center' },
+  emptyChartText: { color: t.textMuted, textAlign: 'center', fontSize: 14, lineHeight: 20 },
+  chartBarContainer: { height: 24, backgroundColor: t.bg, borderRadius: 12, flexDirection: 'row', overflow: 'hidden', marginBottom: 24 },
+  chartBarSegment: { height: '100%' },
+  legendContainer: { gap: 12 },
+  legendItem: { flexDirection: 'row', alignItems: 'center' },
+  legendIndicator: { width: 12, height: 12, borderRadius: 4, marginRight: 12 },
+  legendTextWrapper: { flexDirection: 'row', justifyContent: 'space-between', flex: 1 },
+  legendName: { color: t.textSecondary, fontSize: 14, fontWeight: '500' },
+  legendVal: { color: t.textMuted, fontSize: 14, fontWeight: '600' },
+  habitsContainer: { paddingHorizontal: 24 },
   habitCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#e0f2fe',
-    shadowColor: '#0284c7',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.04,
-    shadowRadius: 16,
-    elevation: 4,
+    backgroundColor: t.card, borderRadius: 24, padding: 20, borderWidth: 1, borderColor: t.accentBorder,
+    shadowColor: t.shadow, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 4,
   },
-  habitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  habitDotActive: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#10b981',
-    marginRight: 12,
-  },
-  habitDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#cbd5e1',
-    marginRight: 12,
-  },
-  habitText: {
-    color: '#334155',
-    fontSize: 14,
-  },
+  habitRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
+  habitDotActive: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#10b981', marginRight: 12 },
+  habitDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: t.textMuted, marginRight: 12 },
+  habitText: { color: t.textSecondary, fontSize: 14 },
 });
+

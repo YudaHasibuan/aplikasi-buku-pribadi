@@ -1,22 +1,21 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { theme: t } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#7C3AED',
-        tabBarInactiveTintColor: '#94a3b8',
+        tabBarActiveTintColor: t.accent,
+        tabBarInactiveTintColor: t.textMuted,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#EDE9FE',
+          backgroundColor: t.tabBar,
+          borderTopColor: t.accentBorder,
           borderTopWidth: 1,
           elevation: 0,
           height: Platform.OS === 'ios' ? 88 : 65,
