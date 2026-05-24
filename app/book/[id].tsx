@@ -117,15 +117,15 @@ export default function BookDetailScreen() {
       <Stack.Screen 
         options={{ 
           title: book.title,
-          headerStyle: { backgroundColor: '#0f172a' },
-          headerTintColor: '#f8fafc',
+          headerStyle: { backgroundColor: '#ffffff' },
+          headerTintColor: '#0f172a',
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 16, marginRight: 16 }}>
               <Pressable onPress={handleToggleFavorite}>
                 <IconSymbol 
                   name={book.is_favorite === 1 ? 'heart.fill' : 'heart'} 
                   size={24} 
-                  color={book.is_favorite === 1 ? '#ef4444' : '#94a3b8'} 
+                  color={book.is_favorite === 1 ? '#ef4444' : '#64748b'} 
                 />
               </Pressable>
               <Pressable onPress={handleDelete}>
@@ -142,14 +142,14 @@ export default function BookDetailScreen() {
             <Image source={{ uri: book.cover }} style={styles.coverImage} contentFit="cover" />
           ) : (
             <View style={styles.coverPlaceholder}>
-              <IconSymbol name="books.vertical.fill" size={64} color="#64748b" />
+              <IconSymbol name="books.vertical.fill" size={64} color="#94a3b8" />
             </View>
           )}
         </View>
 
         <View style={styles.infoContainer}>
           <Text style={styles.title}>{book.title}</Text>
-          <Text style={styles.author}>by {book.author}</Text>
+          <Text style={styles.author}>oleh {book.author}</Text>
           
           <View style={styles.metaRow}>
             <View style={styles.metaItem}>
@@ -219,7 +219,7 @@ export default function BookDetailScreen() {
               onChangeText={setTempProgress}
               keyboardType="numeric"
               placeholder="0 - 100"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#94a3b8"
               maxLength={3}
             />
 
@@ -252,52 +252,118 @@ export default function BookDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, backgroundColor: '#020617', justifyContent: 'center', alignItems: 'center' },
-  loadingText: { color: '#94a3b8', fontSize: 16 },
-  container: { flex: 1, backgroundColor: '#020617' },
+  loadingContainer: { flex: 1, backgroundColor: '#f0f9ff', justifyContent: 'center', alignItems: 'center' },
+  loadingText: { color: '#64748b', fontSize: 16 },
+  container: { flex: 1, backgroundColor: '#f0f9ff' },
   scrollContent: { paddingBottom: 40 },
-  coverContainer: { width: '100%', height: 320, backgroundColor: '#0f172a' },
+  coverContainer: { width: '100%', height: 320, backgroundColor: '#e0f2fe' },
   coverImage: { width: '100%', height: '100%' },
   coverPlaceholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  infoContainer: { padding: 24, marginTop: -20, backgroundColor: '#020617', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
-  title: { color: '#f8fafc', fontSize: 28, fontWeight: 'bold', marginBottom: 8 },
-  author: { color: '#94a3b8', fontSize: 18, marginBottom: 24 },
-  metaRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16, backgroundColor: '#0f172a', padding: 16, borderRadius: 16 },
+  infoContainer: { 
+    padding: 24, 
+    marginTop: -20, 
+    backgroundColor: '#f0f9ff', 
+    borderTopLeftRadius: 24, 
+    borderTopRightRadius: 24,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 8
+  },
+  title: { color: '#0f172a', fontSize: 28, fontWeight: 'bold', marginBottom: 8 },
+  author: { color: '#475569', fontSize: 18, marginBottom: 24 },
+  metaRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginBottom: 24, 
+    backgroundColor: '#ffffff', 
+    padding: 16, 
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 10,
+    elevation: 1,
+  },
   metaItem: { alignItems: 'center' },
   metaLabel: { color: '#64748b', fontSize: 12, marginBottom: 4 },
-  metaValue: { color: '#f8fafc', fontSize: 14, fontWeight: 'bold' },
-  progressBarWrapper: { height: 6, backgroundColor: '#1e293b', borderRadius: 3, marginBottom: 24, overflow: 'hidden' },
-  progressBarFill: { height: '100%', backgroundColor: '#818cf8', borderRadius: 3 },
-  actionRow: { flexDirection: 'row', gap: 12, marginBottom: 32 },
+  metaValue: { color: '#0f172a', fontSize: 14, fontWeight: 'bold' },
+  progressBarWrapper: { height: 8, backgroundColor: '#ffffff', borderRadius: 4, marginBottom: 28, overflow: 'hidden', borderWidth: 1, borderColor: '#e0f2fe' },
+  progressBarFill: { height: '100%', backgroundColor: '#0284c7', borderRadius: 4 },
+  actionRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   actionButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  primaryAction: { backgroundColor: '#818cf8' },
-  secondaryAction: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#334155' },
+  primaryAction: { 
+    backgroundColor: '#0284c7',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3
+  },
+  secondaryAction: { backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#e0f2fe' },
   actionText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
-  actionTextSecondary: { color: '#cbd5e1', fontSize: 16, fontWeight: 'bold' },
+  actionTextSecondary: { color: '#475569', fontSize: 16, fontWeight: 'bold' },
   readPdfButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#059669', paddingVertical: 14, borderRadius: 12,
-    marginBottom: 24, gap: 8
+    backgroundColor: '#10b981', paddingVertical: 14, borderRadius: 12,
+    marginBottom: 28, gap: 8,
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3
   },
   readPdfText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
   synopsisContainer: { marginTop: 8 },
-  sectionTitle: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginBottom: 12 },
-  synopsisText: { color: '#cbd5e1', fontSize: 15, lineHeight: 24 },
+  sectionTitle: { color: '#0f172a', fontSize: 20, fontWeight: 'bold', marginBottom: 12 },
+  synopsisText: { color: '#475569', fontSize: 15, lineHeight: 24 },
   
   // Modal Styles
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(2, 6, 23, 0.8)', justifyContent: 'center', alignItems: 'center', padding: 24 },
-  modalContent: { width: '100%', backgroundColor: '#0f172a', borderRadius: 24, padding: 24, borderWidth: 1, borderColor: '#1e293b' },
-  modalTitle: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  modalLabel: { color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 8 },
-  modalInput: { backgroundColor: '#020617', color: '#f8fafc', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: '#1e293b', fontSize: 16, marginBottom: 20, outlineStyle: 'none' },
+  modalOverlay: { 
+    flex: 1, 
+    backgroundColor: 'rgba(15, 23, 42, 0.4)', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 24 
+  },
+  modalContent: { 
+    width: '100%', 
+    backgroundColor: '#ffffff', 
+    borderRadius: 24, 
+    padding: 24, 
+    borderWidth: 1, 
+    borderColor: '#e0f2fe',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  modalTitle: { color: '#0f172a', fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  modalLabel: { color: '#475569', fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  modalInput: { 
+    backgroundColor: '#f8fafc', 
+    color: '#0f172a', 
+    paddingHorizontal: 16, 
+    paddingVertical: 12, 
+    borderRadius: 12, 
+    borderWidth: 1, 
+    borderColor: '#e2e8f0', 
+    fontSize: 16, 
+    marginBottom: 20, 
+    outlineStyle: 'none' 
+  },
   statusGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  statusChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#1e293b', borderWidth: 1, borderColor: 'transparent' },
-  statusChipActive: { backgroundColor: '#3730a3', borderColor: '#818cf8' },
-  statusChipText: { color: '#cbd5e1', fontSize: 14, fontWeight: '500' },
-  statusChipTextActive: { color: '#e0e7ff', fontWeight: 'bold' },
+  statusChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: 'transparent' },
+  statusChipActive: { backgroundColor: '#e0f2fe', borderColor: '#0284c7' },
+  statusChipText: { color: '#475569', fontSize: 14, fontWeight: '500' },
+  statusChipTextActive: { color: '#0284c7', fontWeight: 'bold' },
   modalActionRow: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  modalCancelBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#1e293b' },
-  modalSaveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#818cf8' },
-  modalCancelText: { color: '#f8fafc', fontSize: 16, fontWeight: '600' },
+  modalCancelBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#f1f5f9' },
+  modalSaveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#0284c7' },
+  modalCancelText: { color: '#475569', fontSize: 16, fontWeight: '600' },
   modalSaveText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
 });

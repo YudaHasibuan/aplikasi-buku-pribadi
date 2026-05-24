@@ -45,7 +45,7 @@ export default function AddBookScreen() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: 'application/pdf',
-        copyToCacheDirectory: true,
+        copyToCopyDirectory: true,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -112,7 +112,7 @@ export default function AddBookScreen() {
           ) : (
             <View style={styles.coverPlaceholder}>
               <View style={styles.cameraIconContainer}>
-                <IconSymbol name="camera" size={28} color="#818cf8" />
+                <IconSymbol name="camera" size={28} color="#0284c7" />
               </View>
               <Text style={styles.coverText}>Upload Cover Buku</Text>
               <Text style={styles.coverSubtext}>Rekomendasi rasio 2:3</Text>
@@ -124,7 +124,7 @@ export default function AddBookScreen() {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Berkas E-Book (PDF - Opsional)</Text>
           <Pressable style={styles.pdfUploadBtn} onPress={pickPdf}>
-            <IconSymbol name="doc.fill" size={20} color={pdfUri ? "#10b981" : "#64748b"} />
+            <IconSymbol name="doc.fill" size={20} color={pdfUri ? "#10b981" : "#94a3b8"} />
             <Text style={[styles.pdfUploadText, pdfUri && { color: '#10b981', fontWeight: 'bold' }]} numberOfLines={1}>
               {pdfName || 'Pilih File E-Book (PDF)'}
             </Text>
@@ -138,7 +138,7 @@ export default function AddBookScreen() {
             value={title} 
             onChangeText={setTitle} 
             placeholder="Masukkan judul buku..." 
-            placeholderTextColor="#475569" 
+            placeholderTextColor="#94a3b8" 
           />
         </View>
 
@@ -149,7 +149,7 @@ export default function AddBookScreen() {
             value={author} 
             onChangeText={setAuthor} 
             placeholder="Nama penulis atau pengarang..." 
-            placeholderTextColor="#475569" 
+            placeholderTextColor="#94a3b8" 
           />
         </View>
 
@@ -160,7 +160,7 @@ export default function AddBookScreen() {
             value={genre} 
             onChangeText={setGenre} 
             placeholder="Contoh: Fiksi, Sains, Sejarah, dll." 
-            placeholderTextColor="#475569" 
+            placeholderTextColor="#94a3b8" 
           />
         </View>
 
@@ -171,7 +171,7 @@ export default function AddBookScreen() {
             value={synopsis} 
             onChangeText={setSynopsis} 
             placeholder="Tuliskan sinopsis atau rangkuman singkat..." 
-            placeholderTextColor="#475569" 
+            placeholderTextColor="#94a3b8" 
             multiline 
             numberOfLines={4} 
           />
@@ -187,7 +187,7 @@ export default function AddBookScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#f0f9ff' },
   scrollContent: { padding: 24, paddingBottom: 40 },
   header: { 
     marginBottom: 28, 
@@ -195,38 +195,41 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     alignItems: 'center' 
   },
-  title: { color: '#f8fafc', fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 },
-  subtitle: { color: '#94a3b8', fontSize: 14, fontWeight: '500', marginBottom: 4 },
+  title: { color: '#0f172a', fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 },
+  subtitle: { color: '#475569', fontSize: 14, fontWeight: '500', marginBottom: 4 },
   scanButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#3730a3', 
+    backgroundColor: '#0284c7', 
     paddingHorizontal: 16, 
     paddingVertical: 10, 
     borderRadius: 14, 
     gap: 6,
-    borderWidth: 1,
-    borderColor: '#818cf8'
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3
   },
-  scanButtonText: { color: '#e0e7ff', fontSize: 14, fontWeight: '600' },
+  scanButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '600' },
   coverUpload: {
     width: 150, 
     height: 220, 
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderRadius: 20, 
     borderWidth: 2, 
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
     borderStyle: 'dashed', 
     alignSelf: 'center', 
     marginBottom: 28,
     justifyContent: 'center', 
     alignItems: 'center', 
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
     shadowRadius: 15,
-    elevation: 8
+    elevation: 4
   },
   coverImage: { width: '100%', height: '100%' },
   coverPlaceholder: { alignItems: 'center', padding: 16 },
@@ -234,50 +237,58 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: '#020617',
+    backgroundColor: '#e0f2fe',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#1e293b'
   },
-  coverText: { color: '#cbd5e1', fontSize: 14, fontWeight: 'bold' },
+  coverText: { color: '#0f172a', fontSize: 14, fontWeight: 'bold' },
   coverSubtext: { color: '#64748b', fontSize: 11, marginTop: 4 },
   formGroup: { marginBottom: 20 },
-  label: { color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  label: { color: '#334155', fontSize: 14, fontWeight: '600', marginBottom: 8 },
   input: {
-    backgroundColor: '#0f172a', 
-    color: '#f8fafc', 
+    backgroundColor: '#ffffff', 
+    color: '#0f172a', 
     paddingHorizontal: 16,
     paddingVertical: 14, 
     borderRadius: 14, 
     borderWidth: 1, 
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
     fontSize: 16, 
-    outlineStyle: 'none' // for web
+    outlineStyle: 'none', // for web
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1
   },
   pdfUploadBtn: {
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#0f172a', 
+    backgroundColor: '#ffffff', 
     paddingHorizontal: 16, 
     paddingVertical: 14, 
     borderRadius: 14, 
     borderWidth: 1, 
-    borderColor: '#1e293b', 
-    gap: 12
+    borderColor: '#e0f2fe', 
+    gap: 12,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1
   },
   pdfUploadText: { color: '#64748b', fontSize: 16, flex: 1 },
   textArea: { minHeight: 100, textAlignVertical: 'top' },
   saveButton: {
-    backgroundColor: '#818cf8', 
+    backgroundColor: '#0284c7', 
     paddingVertical: 16, 
     borderRadius: 14,
     alignItems: 'center', 
     marginTop: 16,
-    shadowColor: '#818cf8',
+    shadowColor: '#0284c7',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 6
   },

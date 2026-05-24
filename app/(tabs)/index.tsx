@@ -82,11 +82,11 @@ export default function LibraryScreen() {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <IconSymbol name="magnifyingglass" size={20} color="#94a3b8" />
+          <IconSymbol name="magnifyingglass" size={20} color="#64748b" />
           <TextInput 
             style={styles.searchInput} 
             placeholder="Cari judul, penulis, atau genre..." 
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#94a3b8"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -112,8 +112,8 @@ export default function LibraryScreen() {
                     {book.cover ? (
                       <Image source={{ uri: book.cover }} style={styles.recentBookCover} />
                     ) : (
-                      <View style={[styles.recentBookCover, { backgroundColor: '#1e293b', justifyContent: 'center', alignItems: 'center' }]}>
-                        <IconSymbol name="books.vertical.fill" size={24} color="#64748b" />
+                      <View style={[styles.recentBookCover, { backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center' }]}>
+                        <IconSymbol name="books.vertical.fill" size={24} color="#94a3b8" />
                       </View>
                     )}
                     <View style={styles.recentBookInfo}>
@@ -165,7 +165,7 @@ export default function LibraryScreen() {
 
         {filteredBooks.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <IconSymbol name="books.vertical.fill" size={48} color="#334155" />
+            <IconSymbol name="books.vertical.fill" size={48} color="#94a3b8" />
             <Text style={styles.emptyText}>
               {searchQuery ? 'Buku tidak ditemukan.' : 'Tidak ada koleksi buku di kategori ini.'}
             </Text>
@@ -179,8 +179,8 @@ export default function LibraryScreen() {
                     {book.cover ? (
                       <Image source={{ uri: book.cover }} style={styles.gridCover} />
                     ) : (
-                      <View style={[styles.gridCover, { backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center' }]}>
-                        <IconSymbol name="books.vertical.fill" size={40} color="#64748b" />
+                      <View style={[styles.gridCover, { backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center' }]}>
+                        <IconSymbol name="books.vertical.fill" size={40} color="#94a3b8" />
                       </View>
                     )}
                     {book.genre && (
@@ -210,7 +210,7 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020617', // Slate 950
+    backgroundColor: '#f0f9ff', // Light Ice Blue
   },
   scrollContent: {
     paddingBottom: 40,
@@ -224,13 +224,13 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   greeting: {
-    color: '#94a3b8',
+    color: '#475569', // Slate 600
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 4,
   },
   title: {
-    color: '#f8fafc',
+    color: '#0f172a', // Slate 900
     fontSize: 28,
     fontWeight: 'bold',
     letterSpacing: -0.5,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#3730a3',
+    borderColor: '#0284c7', // Sky blue border
     overflow: 'hidden',
   },
   avatar: {
@@ -250,19 +250,24 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     marginHorizontal: 24,
     paddingHorizontal: 16,
     height: 52,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
     marginBottom: 24,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
     marginLeft: 12,
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 16,
     outlineStyle: 'none', // For web
   },
@@ -274,7 +279,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 20,
     fontWeight: '700',
     letterSpacing: -0.3,
@@ -286,18 +291,18 @@ const styles = StyleSheet.create({
   },
   recentBookCard: {
     width: 270,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     marginRight: 16,
     padding: 16,
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: '#1e293b',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 4,
   },
   recentBookCover: {
     width: 80,
@@ -310,26 +315,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bookTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 16,
     fontWeight: '700',
     marginBottom: 4,
   },
   bookAuthor: {
-    color: '#94a3b8',
+    color: '#475569',
     fontSize: 14,
     marginBottom: 16,
   },
   progressContainer: {
     height: 6,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#f1f5f9',
     borderRadius: 3,
     marginBottom: 8,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#818cf8',
+    backgroundColor: '#0284c7', // Sky Blue
     borderRadius: 3,
   },
   progressText: {
@@ -346,22 +351,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   filterChipActive: {
-    backgroundColor: '#3730a3',
-    borderColor: '#818cf8',
+    backgroundColor: '#0284c7',
+    borderColor: '#0284c7',
   },
   filterChipText: {
-    color: '#94a3b8',
+    color: '#475569',
     fontSize: 14,
     fontWeight: '600',
   },
   filterChipTextActive: {
-    color: '#e0e7ff',
+    color: '#ffffff',
   },
   gridContainer: {
     flexDirection: 'row',
@@ -381,14 +391,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: '#0284c7',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.06,
     shadowRadius: 12,
-    elevation: 8,
-    backgroundColor: '#0f172a',
+    elevation: 4,
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
   },
   gridCover: {
     width: '100%',
@@ -398,14 +408,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
     maxWidth: '80%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   genreText: {
-    color: '#cbd5e1',
+    color: '#0284c7',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -414,12 +428,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 8,
     right: 8,
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 6,
     borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   gridTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 14,
     fontWeight: '700',
     marginBottom: 4,

@@ -86,7 +86,7 @@ export default function CollectionsScreen() {
         {collections.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIconContainer}>
-              <IconSymbol name="folder" size={48} color="#64748b" />
+              <IconSymbol name="folder" size={48} color="#0284c7" />
             </View>
             <Text style={styles.emptyText}>Belum Ada Rak</Text>
             <Text style={styles.emptySubText}>Buat rak kustom pertama Anda untuk menyortir buku fisik maupun e-book digital.</Text>
@@ -103,7 +103,7 @@ export default function CollectionsScreen() {
                 onPress={() => router.push(`/collection/${col.id}`)}
               >
                 <View style={styles.collectionIconContainer}>
-                  <IconSymbol name="folder" size={28} color="#818cf8" />
+                  <IconSymbol name="folder" size={28} color="#0284c7" />
                 </View>
                 <View style={styles.collectionInfo}>
                   <Text style={styles.collectionName} numberOfLines={1}>{col.name}</Text>
@@ -135,7 +135,7 @@ export default function CollectionsScreen() {
               value={newCollectionName}
               onChangeText={setNewCollectionName}
               placeholder="Contoh: Kuliah, Novel Favorit, dll."
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#94a3b8"
             />
 
             <Text style={styles.modalLabel}>Deskripsi (Opsional)</Text>
@@ -144,7 +144,7 @@ export default function CollectionsScreen() {
               value={newCollectionDesc}
               onChangeText={setNewCollectionDesc}
               placeholder="Berikan penjelasan singkat mengenai rak ini..."
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#94a3b8"
               multiline
               numberOfLines={3}
             />
@@ -166,7 +166,7 @@ export default function CollectionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#f0f9ff' },
   scrollContent: { paddingBottom: 40 },
   header: { 
     flexDirection: 'row', 
@@ -176,48 +176,54 @@ const styles = StyleSheet.create({
     paddingTop: 20, 
     paddingBottom: 24 
   },
-  title: { color: '#f8fafc', fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 },
-  subtitle: { color: '#94a3b8', fontSize: 14, fontWeight: '500', marginBottom: 4 },
+  title: { color: '#0f172a', fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 },
+  subtitle: { color: '#475569', fontSize: 14, fontWeight: '500', marginBottom: 4 },
   addButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#3730a3', 
+    backgroundColor: '#0284c7', 
     paddingHorizontal: 16, 
     paddingVertical: 10, 
     borderRadius: 14, 
     gap: 6,
-    borderWidth: 1,
-    borderColor: '#818cf8'
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  addButtonText: { color: '#e0e7ff', fontSize: 14, fontWeight: '600' },
+  addButtonText: { color: '#ffffff', fontSize: 14, fontWeight: '600' },
   
   emptyContainer: { 
     alignItems: 'center', 
     justifyContent: 'center', 
     marginTop: 60, 
     paddingHorizontal: 40,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     marginHorizontal: 24,
     borderRadius: 24,
     paddingVertical: 40,
     borderWidth: 1,
-    borderColor: '#1e293b'
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 3,
   },
   emptyIconContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#020617',
+    backgroundColor: '#e0f2fe',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#1e293b'
   },
-  emptyText: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginTop: 8 },
+  emptyText: { color: '#0f172a', fontSize: 20, fontWeight: 'bold', marginTop: 8 },
   emptySubText: { color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 20 },
   emptyButton: {
-    backgroundColor: '#818cf8',
+    backgroundColor: '#0284c7',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
@@ -229,62 +235,70 @@ const styles = StyleSheet.create({
   collectionCard: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#0f172a', 
+    backgroundColor: '#ffffff', 
     padding: 16, 
     borderRadius: 20, 
     borderWidth: 1, 
-    borderColor: '#1e293b' 
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 2,
   },
   collectionIconContainer: { 
     width: 56, 
     height: 56, 
-    backgroundColor: '#020617', 
+    backgroundColor: '#e0f2fe', 
     borderRadius: 14, 
     alignItems: 'center', 
     justifyContent: 'center', 
     marginRight: 16,
-    borderWidth: 1,
-    borderColor: '#1e293b'
   },
   collectionInfo: { flex: 1 },
-  collectionName: { color: '#f8fafc', fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
+  collectionName: { color: '#0f172a', fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   collectionCount: { color: '#64748b', fontSize: 13, fontWeight: '600' },
   deleteButton: { padding: 8 },
 
   // Modal Styles
   modalOverlay: { 
     flex: 1, 
-    backgroundColor: 'rgba(2, 6, 23, 0.85)', 
+    backgroundColor: 'rgba(15, 23, 42, 0.4)', 
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24
   },
   modalContent: { 
     width: '100%',
-    backgroundColor: '#0f172a', 
+    backgroundColor: '#ffffff', 
     borderRadius: 24, 
     padding: 24, 
     borderWidth: 1, 
-    borderColor: '#1e293b'
+    borderColor: '#e0f2fe',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
   },
-  modalTitle: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  modalLabel: { color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  modalTitle: { color: '#0f172a', fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  modalLabel: { color: '#475569', fontSize: 14, fontWeight: '600', marginBottom: 8 },
   modalInput: { 
-    backgroundColor: '#020617', 
-    color: '#f8fafc', 
+    backgroundColor: '#f8fafc', 
+    color: '#0f172a', 
     paddingHorizontal: 16, 
     paddingVertical: 12, 
     borderRadius: 12, 
     borderWidth: 1, 
-    borderColor: '#1e293b', 
+    borderColor: '#e2e8f0', 
     fontSize: 16, 
     marginBottom: 20, 
     outlineStyle: 'none' 
   },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   modalActionRow: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  modalCancelBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#1e293b' },
-  modalSaveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#818cf8' },
-  modalCancelText: { color: '#f8fafc', fontSize: 16, fontWeight: '600' },
+  modalCancelBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#f1f5f9' },
+  modalSaveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#0284c7' },
+  modalCancelText: { color: '#475569', fontSize: 16, fontWeight: '600' },
   modalSaveText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold' },
 });

@@ -74,8 +74,8 @@ export default function StatsHubScreen() {
         
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Stats & Hub</Text>
-          <Text style={styles.subtitle}>Pantau progres membaca & koleksi buku Anda.</Text>
+          <Text style={styles.title}>Analisis & Progres</Text>
+          <Text style={styles.subtitle}>Pantau pencapaian dan kebiasaan membaca Anda.</Text>
         </View>
 
         {/* Inspirational Quote Card */}
@@ -89,8 +89,8 @@ export default function StatsHubScreen() {
           
           {/* Card Total Buku */}
           <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <IconSymbol name="books.vertical.fill" size={24} color="#3b82f6" />
+            <View style={[styles.iconWrapper, { backgroundColor: '#e0f2fe' }]}>
+              <IconSymbol name="books.vertical.fill" size={24} color="#0284c7" />
             </View>
             <Text style={styles.statNumber}>{totalBooks}</Text>
             <Text style={styles.statLabel}>Total Koleksi</Text>
@@ -98,8 +98,8 @@ export default function StatsHubScreen() {
 
           {/* Card E-Book PDF */}
           <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-              <IconSymbol name="doc.fill" size={24} color="#10b981" />
+            <View style={[styles.iconWrapper, { backgroundColor: '#dcfce7' }]}>
+              <IconSymbol name="doc.fill" size={24} color="#15803d" />
             </View>
             <Text style={styles.statNumber}>{pdfBooks}</Text>
             <Text style={styles.statLabel}>E-Book (PDF)</Text>
@@ -107,8 +107,8 @@ export default function StatsHubScreen() {
 
           {/* Card Progres Rata-rata */}
           <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: 'rgba(139, 92, 246, 0.15)' }]}>
-              <IconSymbol name="sparkles" size={24} color="#8b5cf6" />
+            <View style={[styles.iconWrapper, { backgroundColor: '#f3e8ff' }]}>
+              <IconSymbol name="sparkles" size={24} color="#7e22ce" />
             </View>
             <Text style={styles.statNumber}>{averageProgress}%</Text>
             <Text style={styles.statLabel}>Rerata Progres</Text>
@@ -116,8 +116,8 @@ export default function StatsHubScreen() {
 
           {/* Card Genre Terfavorit */}
           <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-              <IconSymbol name="heart.fill" size={24} color="#f59e0b" />
+            <View style={[styles.iconWrapper, { backgroundColor: '#fef3c7' }]}>
+              <IconSymbol name="heart.fill" size={24} color="#b45309" />
             </View>
             <Text style={styles.statNumber} numberOfLines={1} adjustsFontSizeToFit>{favoriteGenre}</Text>
             <Text style={styles.statLabel}>Genre Favorit</Text>
@@ -137,9 +137,9 @@ export default function StatsHubScreen() {
             <>
               {/* Custom Stacked Progress Bar Chart */}
               <View style={styles.chartBarContainer}>
-                {readingPct > 0 && <View style={[styles.chartBarSegment, { width: `${readingPct}%`, backgroundColor: '#6366f1' }]} />}
+                {readingPct > 0 && <View style={[styles.chartBarSegment, { width: `${readingPct}%`, backgroundColor: '#3b82f6' }]} />}
                 {completedPct > 0 && <View style={[styles.chartBarSegment, { width: `${completedPct}%`, backgroundColor: '#10b981' }]} />}
-                {wantedPct > 0 && <View style={[styles.chartBarSegment, { width: `${wantedPct}%`, backgroundColor: '#3b82f6' }]} />}
+                {wantedPct > 0 && <View style={[styles.chartBarSegment, { width: `${wantedPct}%`, backgroundColor: '#0284c7' }]} />}
                 {pausedPct > 0 && <View style={[styles.chartBarSegment, { width: `${pausedPct}%`, backgroundColor: '#f59e0b' }]} />}
               </View>
 
@@ -147,7 +147,7 @@ export default function StatsHubScreen() {
               <View style={styles.legendContainer}>
                 
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#6366f1' }]} />
+                  <View style={[styles.legendIndicator, { backgroundColor: '#3b82f6' }]} />
                   <View style={styles.legendTextWrapper}>
                     <Text style={styles.legendName}>Sedang Dibaca</Text>
                     <Text style={styles.legendVal}>{readingBooks} Buku ({Math.round(readingPct)}%)</Text>
@@ -163,7 +163,7 @@ export default function StatsHubScreen() {
                 </View>
 
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#3b82f6' }]} />
+                  <View style={[styles.legendIndicator, { backgroundColor: '#0284c7' }]} />
                   <View style={styles.legendTextWrapper}>
                     <Text style={styles.legendName}>Ingin Baca</Text>
                     <Text style={styles.legendVal}>{wantedBooks} Buku ({Math.round(wantedPct)}%)</Text>
@@ -210,7 +210,7 @@ export default function StatsHubScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020617', // Slate 950
+    backgroundColor: '#f0f9ff', // Light Ice Blue
   },
   scrollContent: {
     paddingBottom: 40,
@@ -221,29 +221,34 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   title: {
-    color: '#f8fafc',
+    color: '#0f172a', // Slate 900
     fontSize: 32,
     fontWeight: '800',
     letterSpacing: -1,
     marginBottom: 6,
   },
   subtitle: {
-    color: '#94a3b8',
+    color: '#475569', // Slate 600
     fontSize: 15,
   },
   quoteCard: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     marginHorizontal: 24,
     marginTop: 8,
     marginBottom: 20,
     padding: 20,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#bae6fd', // Soft Light Blue Border
     borderStyle: 'dashed',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   quoteText: {
-    color: '#e2e8f0',
+    color: '#0f172a',
     fontSize: 15,
     fontStyle: 'italic',
     lineHeight: 22,
@@ -251,7 +256,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   quoteAuthor: {
-    color: '#64748b',
+    color: '#0284c7',
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
@@ -266,12 +271,17 @@ const styles = StyleSheet.create({
   statCard: {
     width: isWeb ? '23%' : '47%',
     marginHorizontal: '1.5%',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
   iconWrapper: {
     width: 48,
@@ -282,7 +292,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   statNumber: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 24,
     fontWeight: '800',
     marginBottom: 4,
@@ -293,16 +303,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   chartSection: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     marginHorizontal: 24,
     borderRadius: 24,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
     marginBottom: 24,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 4,
   },
   sectionTitle: {
-    color: '#f8fafc',
+    color: '#0f172a',
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 16,
@@ -319,7 +334,7 @@ const styles = StyleSheet.create({
   },
   chartBarContainer: {
     height: 24,
-    backgroundColor: '#1e293b',
+    backgroundColor: '#f1f5f9',
     borderRadius: 12,
     flexDirection: 'row',
     overflow: 'hidden',
@@ -347,7 +362,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   legendName: {
-    color: '#cbd5e1',
+    color: '#334155',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -360,11 +375,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   habitCard: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderRadius: 24,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 4,
   },
   habitRow: {
     flexDirection: 'row',
@@ -382,11 +402,11 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#334155',
+    backgroundColor: '#cbd5e1',
     marginRight: 12,
   },
   habitText: {
-    color: '#cbd5e1',
+    color: '#334155',
     fontSize: 14,
   },
 });

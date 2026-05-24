@@ -61,11 +61,11 @@ export default function CollectionDetailScreen() {
       <Stack.Screen 
         options={{ 
           title: 'Detail Rak',
-          headerStyle: { backgroundColor: '#0f172a' },
-          headerTintColor: '#f8fafc',
+          headerStyle: { backgroundColor: '#ffffff' },
+          headerTintColor: '#0f172a',
           headerRight: () => (
             <Pressable onPress={openAddModal} style={{ marginRight: 16 }}>
-              <IconSymbol name="plus.circle.fill" size={24} color="#818cf8" />
+              <IconSymbol name="plus.circle.fill" size={24} color="#0284c7" />
             </Pressable>
           ),
         }} 
@@ -74,7 +74,7 @@ export default function CollectionDetailScreen() {
         {collectionBooks.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIconContainer}>
-              <IconSymbol name="folder" size={48} color="#64748b" />
+              <IconSymbol name="folder" size={48} color="#0284c7" />
             </View>
             <Text style={styles.emptyText}>Rak ini masih kosong.</Text>
             <Text style={styles.emptySubText}>Tambahkan buku dari koleksi Anda ke rak ini agar terorganisir.</Text>
@@ -92,8 +92,8 @@ export default function CollectionDetailScreen() {
                       {book.cover ? (
                         <Image source={{ uri: book.cover }} style={styles.bookCover} />
                       ) : (
-                        <View style={[styles.bookCover, { backgroundColor: '#020617', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#1e293b' }]}>
-                          <IconSymbol name="books.vertical.fill" size={20} color="#64748b" />
+                        <View style={[styles.bookCover, { backgroundColor: '#f1f5f9', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#e2e8f0' }]}>
+                          <IconSymbol name="books.vertical.fill" size={20} color="#94a3b8" />
                         </View>
                       )}
                       <View style={styles.bookTextContent}>
@@ -158,55 +158,63 @@ export default function CollectionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#f0f9ff' },
   emptyContainer: { 
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
     padding: 24,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     margin: 24,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#1e293b'
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 3,
   },
   emptyIconContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#020617',
+    backgroundColor: '#e0f2fe',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#1e293b'
   },
-  emptyText: { color: '#cbd5e1', fontSize: 18, fontWeight: 'bold', marginTop: 8 },
+  emptyText: { color: '#0f172a', fontSize: 18, fontWeight: 'bold', marginTop: 8 },
   emptySubText: { color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 8, marginBottom: 24, lineHeight: 20 },
-  addBookBtn: { backgroundColor: '#818cf8', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
+  addBookBtn: { backgroundColor: '#0284c7', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
   addBookBtnText: { color: '#ffffff', fontWeight: 'bold' },
   scrollContent: { padding: 24 },
   listContainer: { gap: 16 },
   bookCard: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#0f172a', 
+    backgroundColor: '#ffffff', 
     borderRadius: 20, 
     borderWidth: 1, 
-    borderColor: '#1e293b', 
+    borderColor: '#e0f2fe',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 2,
     overflow: 'hidden' 
   },
   bookInfoRow: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 12 },
   bookCover: { width: 44, height: 66, borderRadius: 8, marginRight: 14 },
   bookTextContent: { flex: 1 },
-  bookTitle: { color: '#f8fafc', fontSize: 16, fontWeight: '700', marginBottom: 4 },
-  bookAuthor: { color: '#94a3b8', fontSize: 14 },
+  bookTitle: { color: '#0f172a', fontSize: 16, fontWeight: '700', marginBottom: 4 },
+  bookAuthor: { color: '#64748b', fontSize: 14 },
   removeBtn: { padding: 16 },
 
   // Modal Styles
   modalOverlay: { 
     flex: 1, 
-    backgroundColor: 'rgba(2, 6, 23, 0.85)', 
+    backgroundColor: 'rgba(15, 23, 42, 0.4)', 
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24
@@ -214,15 +222,20 @@ const styles = StyleSheet.create({
   modalContent: { 
     width: '100%',
     maxHeight: '70%', 
-    backgroundColor: '#0f172a', 
+    backgroundColor: '#ffffff', 
     borderRadius: 24, 
     padding: 24, 
     borderWidth: 1, 
-    borderColor: '#1e293b' 
+    borderColor: '#e0f2fe',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
   },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  modalTitle: { color: '#f8fafc', fontSize: 20, fontWeight: 'bold' },
-  closeBtnText: { color: '#818cf8', fontSize: 16, fontWeight: '600' },
+  modalTitle: { color: '#0f172a', fontSize: 20, fontWeight: 'bold' },
+  closeBtnText: { color: '#0284c7', fontSize: 16, fontWeight: '600' },
   modalScroll: { flex: 1 },
   modalBookCard: { 
     flexDirection: 'row', 
@@ -230,10 +243,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     paddingVertical: 14, 
     borderBottomWidth: 1, 
-    borderBottomColor: '#1e293b' 
+    borderBottomColor: '#f1f5f9' 
   },
-  modalBookTitle: { color: '#f8fafc', fontSize: 16, flex: 1, marginRight: 16, fontWeight: '600' },
+  modalBookTitle: { color: '#0f172a', fontSize: 16, flex: 1, marginRight: 16, fontWeight: '600' },
   alreadyAddedText: { color: '#64748b', fontSize: 14, fontStyle: 'italic', fontWeight: '500' },
-  addToShelfBtn: { backgroundColor: '#3730a3', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: '#818cf8' },
-  addToShelfText: { color: '#e0e7ff', fontSize: 14, fontWeight: '600' },
+  addToShelfBtn: { backgroundColor: '#e0f2fe', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+  addToShelfText: { color: '#0284c7', fontSize: 14, fontWeight: '600' },
 });

@@ -107,8 +107,8 @@ export default function EditBookScreen() {
       <Stack.Screen 
         options={{ 
           title: 'Edit Buku',
-          headerStyle: { backgroundColor: '#0f172a' },
-          headerTintColor: '#f8fafc',
+          headerStyle: { backgroundColor: '#ffffff' },
+          headerTintColor: '#0f172a',
         }} 
       />
       <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -121,7 +121,7 @@ export default function EditBookScreen() {
             ) : (
               <View style={styles.coverPlaceholder}>
                 <View style={styles.cameraIconContainer}>
-                  <IconSymbol name="camera" size={28} color="#818cf8" />
+                  <IconSymbol name="camera" size={28} color="#0284c7" />
                 </View>
                 <Text style={styles.coverText}>Ganti Cover Buku</Text>
                 <Text style={styles.coverSubtext}>Rekomendasi rasio 2:3</Text>
@@ -137,7 +137,7 @@ export default function EditBookScreen() {
               value={title} 
               onChangeText={setTitle} 
               placeholder="Masukkan judul buku..." 
-              placeholderTextColor="#475569" 
+              placeholderTextColor="#94a3b8" 
             />
           </View>
 
@@ -148,7 +148,7 @@ export default function EditBookScreen() {
               value={author} 
               onChangeText={setAuthor} 
               placeholder="Nama penulis..." 
-              placeholderTextColor="#475569" 
+              placeholderTextColor="#94a3b8" 
             />
           </View>
 
@@ -159,14 +159,14 @@ export default function EditBookScreen() {
               value={genre} 
               onChangeText={setGenre} 
               placeholder="Contoh: Fiction, Science, dll." 
-              placeholderTextColor="#475569" 
+              placeholderTextColor="#94a3b8" 
             />
           </View>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>Berkas E-Book (PDF)</Text>
             <Pressable style={styles.pdfUploadBtn} onPress={pickPdf}>
-              <IconSymbol name="doc.fill" size={20} color={pdfUri ? "#10b981" : "#64748b"} />
+              <IconSymbol name="doc.fill" size={20} color={pdfUri ? "#10b981" : "#94a3b8"} />
               <Text style={[styles.pdfUploadText, pdfUri && { color: '#10b981', fontWeight: 'bold' }]} numberOfLines={1}>
                 {pdfUri ? 'File PDF Terlampir' : 'Pilih File PDF Baru'}
               </Text>
@@ -180,7 +180,7 @@ export default function EditBookScreen() {
               value={synopsis} 
               onChangeText={setSynopsis} 
               placeholder="Tuliskan sinopsis singkat..." 
-              placeholderTextColor="#475569" 
+              placeholderTextColor="#94a3b8" 
               multiline 
               numberOfLines={4} 
             />
@@ -196,28 +196,28 @@ export default function EditBookScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, backgroundColor: '#020617', justifyContent: 'center', alignItems: 'center' },
-  loadingText: { color: '#94a3b8', fontSize: 16 },
-  container: { flex: 1, backgroundColor: '#020617' },
+  loadingContainer: { flex: 1, backgroundColor: '#f0f9ff', justifyContent: 'center', alignItems: 'center' },
+  loadingText: { color: '#64748b', fontSize: 16 },
+  container: { flex: 1, backgroundColor: '#f0f9ff' },
   scrollContent: { padding: 24, paddingBottom: 40 },
   coverUpload: {
     width: 150, 
     height: 220, 
-    backgroundColor: '#0f172a',
+    backgroundColor: '#ffffff',
     borderRadius: 20, 
     borderWidth: 2, 
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
     borderStyle: 'dashed', 
     alignSelf: 'center', 
     marginBottom: 28,
     justifyContent: 'center', 
     alignItems: 'center', 
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
     shadowRadius: 15,
-    elevation: 8
+    elevation: 4
   },
   coverImage: { width: '100%', height: '100%' },
   coverPlaceholder: { alignItems: 'center', padding: 16 },
@@ -225,50 +225,58 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: '#020617',
+    backgroundColor: '#e0f2fe',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#1e293b'
   },
-  coverText: { color: '#cbd5e1', fontSize: 14, fontWeight: 'bold' },
+  coverText: { color: '#0f172a', fontSize: 14, fontWeight: 'bold' },
   coverSubtext: { color: '#64748b', fontSize: 11, marginTop: 4 },
   formGroup: { marginBottom: 20 },
-  label: { color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  label: { color: '#334155', fontSize: 14, fontWeight: '600', marginBottom: 8 },
   input: {
-    backgroundColor: '#0f172a', 
-    color: '#f8fafc', 
+    backgroundColor: '#ffffff', 
+    color: '#0f172a', 
     paddingHorizontal: 16,
     paddingVertical: 14, 
     borderRadius: 14, 
     borderWidth: 1, 
-    borderColor: '#1e293b',
+    borderColor: '#e0f2fe',
     fontSize: 16, 
-    outlineStyle: 'none'
+    outlineStyle: 'none',
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1
   },
   pdfUploadBtn: {
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#0f172a', 
+    backgroundColor: '#ffffff', 
     paddingHorizontal: 16, 
     paddingVertical: 14, 
     borderRadius: 14, 
     borderWidth: 1, 
-    borderColor: '#1e293b', 
-    gap: 12
+    borderColor: '#e0f2fe', 
+    gap: 12,
+    shadowColor: '#0284c7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 1
   },
   pdfUploadText: { color: '#64748b', fontSize: 16, flex: 1 },
   textArea: { minHeight: 100, textAlignVertical: 'top' },
   saveButton: {
-    backgroundColor: '#818cf8', 
+    backgroundColor: '#0284c7', 
     paddingVertical: 16, 
     borderRadius: 14,
     alignItems: 'center', 
     marginTop: 16,
-    shadowColor: '#818cf8',
+    shadowColor: '#0284c7',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 6
   },
