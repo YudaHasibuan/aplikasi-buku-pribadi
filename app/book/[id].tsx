@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, Modal, TextInput, Platform } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, Modal, TextInput } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { getBookById, deleteBook, updateBook, Book } from '@/database/db';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as IntentLauncher from 'expo-intent-launcher';
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Linking from 'expo-linking';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function BookDetailScreen() {
@@ -62,15 +59,7 @@ export default function BookDetailScreen() {
     }
   };
 
-  const handleReadPdf = async () => {
-    if (!book?.pdf_uri) return;
-    try {
-      if (Platform.OS === 'android') {
-        const cu = await FileSystem.getContentUriAsync(book.pdf_uri);
-        await IntentLauncher.startActivityAsync('android.intent.action.VIEW', { data: cu, flags: 1, type: 'application/pdf' });
-      } else { Linking.openURL(book.pdf_uri); }
-    } catch (e) { Alert.alert('Error', 'Gagal membuka PDF.'); }
-  };
+
 
   if (!book) return <View style={{ flex: 1, backgroundColor: t.bg, justifyContent: 'center', alignItems: 'center' }}><Text style={{ color: t.textMuted }}>Memuat buku...</Text></View>;
 
@@ -124,7 +113,7 @@ export default function BookDetailScreen() {
             <View style={{ height: '100%', backgroundColor: t.accent, borderRadius: 4, width: `${book.progress || 0}%` } as any} />
           </View>
 
-          {/* Read PDF Button — only shown if book has PDF */}
+          {/* Read PDF Button */}
           {book.pdf_uri ? (
             <Pressable
               style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#5C3D1E', paddingVertical: 16, borderRadius: 14, marginBottom: 20, gap: 10, shadowColor: '#5C3D1E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 5 }}
@@ -144,13 +133,6 @@ export default function BookDetailScreen() {
               <Text style={{ color: t.textSecondary, fontSize: 16, fontWeight: 'bold' }}>Edit Buku</Text>
             </Pressable>
           </View>
-
-          {book.pdf_uri ? (
-            <Pressable style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#10b981', paddingVertical: 14, borderRadius: 12, marginBottom: 28, gap: 8, shadowColor: '#10b981', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 3 }} onPress={handleReadPdf}>
-              <IconSymbol name="doc.fill" size={20} color="#ffffff" />
-              <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }}>Baca E-Book (PDF)</Text>
-            </Pressable>
-          ) : null}
 
           {book.synopsis ? (
             <View style={{ marginTop: 8 }}>

@@ -30,6 +30,9 @@ const MAPPING = {
   'barcode.viewfinder': 'qr-code-scanner',
   'doc.fill': 'picture-as-pdf',
   'chart.bar': 'insert-chart',
+  'xmark': 'close',
+  'chevron.left': 'chevron-left',
+  'person.fill': 'person',
 } as IconMapping;
 
 /**
