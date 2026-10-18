@@ -1,5 +1,5 @@
 # 📚 Personal Book Repository — Feature Plan
-> App Name: **MyApp** · Platform: **Expo (Web + Mobile)** · Theme: **Dark / Indigo**
+> App Name: **Kita.id** · Platform: **Expo (Web + Mobile)** · Theme: **8 tema (6 terang, 2 gelap)**
 
 ---
 
@@ -33,7 +33,7 @@
 
 ### 1.3 Detail Halaman Buku ⭐ Priority: HIGH
 - [x] Halaman detail buku dengan cover besar, sinopsis, metadata lengkap
-- [x] Rating bintang (1–5) per buku
+- [x] Rating bintang (1–5) per buku — bisa diubah langsung dari halaman detail
 - [ ] Review / catatan pribadi
 - [x] Tombol aksi: Mulai Baca, Tandai Selesai, Edit, Hapus
 
@@ -71,9 +71,9 @@
 - [ ] Riwayat sesi baca per buku
 
 ### 2.4 Target Baca 🔵 Priority: MEDIUM
-- [ ] Set target buku per bulan / per tahun
+- [x] Set target buku per tahun (Statistik → Ubah target)
 - [ ] Notifikasi pengingat baca harian (expo-notifications)
-- [ ] Progress target di dashboard
+- [x] Progress target di dashboard
 
 ---
 
@@ -105,7 +105,7 @@
 ### 4.1 Buat Koleksi / Rak Buku ⭐ Priority: HIGH
 - [x] Buat rak buku kustom (misal: "Bacaan Favorit", "Buku Kerja", "Wishlist")
 - [x] Tambahkan buku ke rak tertentu
-- [x] Hapus dan rename rak (rename blm, tapi hapus sdh)
+- [x] Hapus dan rename rak
 
 ### 4.2 Wishlist Buku 🔵 Priority: MEDIUM
 - [ ] Tab khusus "Ingin Beli/Baca" sebagai daftar keinginan
@@ -127,7 +127,7 @@
 - [x] Total E-Book (PDF) yang dimiliki
 
 ### 5.2 Grafik Aktivitas Baca 🔵 Priority: MEDIUM
-- [x] Segment stacked bar chart visualisasi status membaca
+- [x] Donut chart visualisasi status membaca
 - [ ] Streak membaca (berapa hari berturut-turut)
 - [ ] Waktu total membaca (dari sesi baca)
 
@@ -137,7 +137,7 @@
 
 ### 5.4 Milestones & Badge 🟡 Priority: LOW
 - [ ] Badge "Kutu Buku" setelah 50 buku selesai
-- [ ] Milestone: 10, 25, 50, 100 buku selesai
+- [x] Milestone: 1, 5, 10, 25, 50 buku selesai (halaman Statistik)
 - [ ] Tampil di halaman profil
 
 ---
@@ -145,13 +145,13 @@
 ## 6. ⚙️ Settings & Profile
 
 ### 6.1 Profil Pengguna ⭐ Priority: HIGH
-- [ ] Nama pengguna dan avatar
-- [ ] Upload foto profil (expo-image-picker)
+- [x] Nama pengguna dan avatar
+- [x] Upload foto profil (expo-image-picker)
 - [ ] Bio singkat
 
 ### 6.2 Tema Aplikasi 🔵 Priority: MEDIUM
-- [ ] Toggle Dark Mode / Light Mode
-- [ ] Pilihan warna aksen (Indigo, Emerald, Amber, Rose)
+- [x] Toggle Dark Mode / Light Mode (Tengah Malam & Noir Emas)
+- [x] Pilihan warna aksen (Lavender, Biru Langit, Zamrud, Amber, Mawar, Kertas Tua)
 - [ ] Ukuran font konten
 
 ### 6.3 Notifikasi 🟡 Priority: LOW
@@ -163,13 +163,13 @@
 ## 7. 💾 Export & Backup
 
 ### 7.1 Export Data 🔵 Priority: MEDIUM
-- [ ] Export koleksi buku ke file **JSON**
+- [x] Export koleksi buku ke file **JSON**
 - [ ] Export ke **CSV** (kompatibel dengan Excel / Google Sheets)
-- [ ] Share daftar buku via WhatsApp/Email (expo-sharing)
+- [x] Share file backup via WhatsApp/Email (expo-sharing)
 
 ### 7.2 Backup & Restore 🟡 Priority: LOW
-- [ ] Backup data ke file lokal
-- [ ] Restore data dari file backup
+- [x] Backup data ke file lokal
+- [x] Restore data dari file backup (gabung, tanpa duplikat)
 
 ---
 
@@ -177,16 +177,17 @@
 
 | Kebutuhan | Library |
 |---|---|
-| Framework | Expo SDK 54, Expo Router v6 |
+| Framework | Expo SDK 56, Expo Router |
 | Database Lokal | `expo-sqlite` |
 | Upload Gambar | `expo-image-picker` |
-| Scan Barcode | `expo-barcode-scanner` |
+| Scan Barcode | `expo-camera` |
 | Notifikasi | `expo-notifications` |
 | Dokumen | `expo-document-picker` |
 | Share | `expo-sharing` |
 | Animasi | `react-native-reanimated` |
-| Grafik | `victory-native` atau `react-native-gifted-charts` |
-| Icons | `@expo/vector-icons` (MaterialIcons) |
+| Grafik | `react-native-svg` (DonutChart & RingProgress kustom) |
+| Icons | `expo-symbols` (iOS) + `@expo/vector-icons` MaterialIcons |
+| Tipografi | `@expo-google-fonts/fraunces`, `@expo-google-fonts/plus-jakarta-sans` |
 | External API | Open Library API / Google Books API (gratis) |
 
 ---

@@ -2,7 +2,7 @@
 
 ![Kita.id Banner](https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1200&auto=format&fit=crop)
 
-**Kita.id** (Aplikasi Buku Pribadi) adalah aplikasi mobile komprehensif yang dirancang untuk mengelola koleksi buku fisik maupun digital Anda, memantau progres membaca, serta memberikan wawasan analitik tentang kebiasaan membaca Anda. Dibangun menggunakan teknologi modern dengan desain antarmuka *Dark Glassmorphism* yang elegan dan premium.
+**Kita.id** (Aplikasi Buku Pribadi) adalah aplikasi mobile komprehensif yang dirancang untuk mengelola koleksi buku fisik maupun digital Anda, memantau progres membaca, serta memberikan wawasan analitik tentang kebiasaan membaca Anda. Dibangun menggunakan teknologi modern dengan sistem desain *editorial* yang hangat dan premium: tipografi serif Fraunces + Plus Jakarta Sans, 8 tema warna (termasuk mode gelap), gradien lembut, dan animasi halus.
 
 ---
 
@@ -19,16 +19,19 @@ Punya buku fisik? Cukup arahkan kamera HP ke *barcode* ISBN di sampul belakang b
 ### 3. 📄 E-Book & PDF Repository
 Tidak hanya buku fisik, Anda kini bisa menyimpan koleksi buku digital! Unggah *file* PDF/e-book ke dalam aplikasi, lacak progresnya, dan baca langsung menggunakan PDF Reader bawaan sistem Anda secara *seamless*.
 
-### 4. 📊 Statistics Dashboard & Hub
+### 4. 📊 Statistics Dashboard
 Pantau perjalanan membaca Anda lewat visualisasi interaktif yang elegan:
-- **Live Counters:** Lihat total buku, koleksi PDF, dan progres rata-rata membaca Anda.
-- **Stacked Bar Chart:** Analitik persentase status membaca (Sedang Dibaca, Selesai, Ingin Baca, Ditunda).
-- **Deteksi Genre Otomatis:** Sistem akan menampilkan genre terfavorit dari koleksi Anda.
-- **Habits Tracker:** Daftar periksa kebiasaan membaca untuk memacu semangat literasi harian.
-- **Inspirational Quote:** Menyajikan kutipan berkelas dari tokoh ternama setiap kali Anda membuka *dashboard*.
+- **Target Membaca Tahunan:** Tetapkan target jumlah buku dan pantau progresnya lewat *ring chart*.
+- **Donut Chart Status Baca:** Distribusi Sedang Dibaca, Selesai, Ingin Baca, dan Ditunda.
+- **Genre Favorit & Rating Tertinggi:** Dihitung otomatis dari koleksi Anda.
+- **Pencapaian (Milestones):** Lencana terbuka saat 1, 5, 10, 25, dan 50 buku selesai dibaca.
+- **Inspirational Quote:** Kutipan dari tokoh ternama setiap kali Anda membuka *dashboard*.
 
-### 5. 📈 Reading Progress Tracker
-Catat persentase progres membaca Anda (0-100%). Aplikasi secara cerdas akan mengganti status menjadi "Selesai" jika Anda menyentuh 100%, lengkap dengan *progress bar* visual yang estetik di setiap halaman detail buku.
+### 5. 📈 Reading Progress Tracker & Rating
+Catat persentase progres membaca (0-100%) lewat *bottom sheet* dengan pilihan cepat. Status otomatis berubah menjadi "Selesai" di 100%. Saat membaca PDF di dalam aplikasi, progres tersimpan otomatis berdasarkan halaman terakhir. Beri rating 1–5 bintang langsung dari halaman detail.
+
+### 6. 🎨 8 Tema & Profil
+Pilih tema Lavender, Biru Langit, Zamrud, Amber, Mawar, Kertas Tua, Tengah Malam, atau Noir Emas. Atur nama dan foto profil, lalu *export* / *restore* seluruh koleksi dalam satu file JSON.
 
 ---
 
@@ -36,13 +39,15 @@ Catat persentase progres membaca Anda (0-100%). Aplikasi secara cerdas akan meng
 
 Aplikasi ini dibangun menggunakan arsitektur modern berbasis React Native dengan ekosistem Expo:
 
-- **Framework:** React Native / Expo SDK 56
-- **Routing:** Expo Router v4 (File-based routing)
-- **Database Lokal:** Expo SQLite (Penyimpanan persisten *offline*)
+- **Framework:** React Native 0.85 / Expo SDK 56 (New Architecture, React Compiler)
+- **Routing:** Expo Router (File-based routing, typed routes)
+- **Database Lokal:** Expo SQLite di native, `localStorage` di web (lihat `database/db.ts`)
 - **Storage/Asset Picker:** Expo Image Picker & Expo Document Picker
-- **Native Modules:** Expo Camera (Barcode Scanning), Expo Intent Launcher & Linking (PDF Reader)
-- **Styling:** Vanilla StyleSheet dengan pola desain *Dark Glassmorphism* modern (Slate/Indigo Palette)
-- **Icons:** Expo Symbols / Material Icons
+- **Native Modules:** Expo Camera (Barcode Scanning), WebView + PDF.js (PDF Reader), Expo Sharing & File System (Backup)
+- **Design System:** Token di `constants/design.ts`, tema di `contexts/ThemeContext.tsx`, komponen UI di `components/ui/`
+- **Tipografi:** Fraunces (judul) + Plus Jakarta Sans (teks) via `@expo-google-fonts`
+- **Visual:** Expo Linear Gradient, Expo Blur, React Native SVG, Reanimated 4
+- **Icons:** SF Symbols di iOS, Material Icons di Android/Web (`components/ui/icon-symbol.tsx`)
 
 ---
 
@@ -53,7 +58,7 @@ Pastikan Anda telah menginstal [Node.js](https://nodejs.org/) dan [Git](https://
 1. **Clone repositori ini**
    ```bash
    git clone https://github.com/YudaHasibuan/aplikasi-buku-pribadi.git
-   cd aplikasi-buku-pribadi/myapp
+   cd aplikasi-buku-pribadi
    ```
 
 2. **Instal dependensi**
@@ -81,7 +86,8 @@ Proyek ini menggunakan metodologi pengembangan berbasis fase.
 - [x] **Phase 1: Core System** (Setup UI, SQLite, Expo Router, Bottom Tabs, CRUD Buku).
 - [x] **Phase 2: Management & Tracking** (Reading Tracker 0-100%, Real-time Search, Custom Shelf/Rak Buku, Sistem Relasional Many-to-Many).
 - [x] **Phase 3: Enhancements** (ISBN Camera Scanner, PDF File Integration, UI Analytics/Statistics Dashboard).
-- [ ] **Phase 4: Polish** (Reading Timer, Profiling, Ekspor CSV/JSON, Lokalisasi Bahasa).
+- [x] **Phase 4: Polish** (Design system & 8 tema, Profil, Rating, Target Membaca, Export/Restore JSON, Rename Rak).
+- [ ] **Phase 5: Next** (Reading Timer, Notifikasi Pengingat, Ekspor CSV, Lokalisasi Bahasa).
 
 *(Selengkapnya dapat dilihat pada file `FEATURES_PLAN.md` di dalam repositori).*
 

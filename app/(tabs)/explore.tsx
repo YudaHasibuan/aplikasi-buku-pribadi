@@ -1,261 +1,271 @@
-import { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, ScrollView, Platform, Dimensions, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
-import { getAllBooks, Book } from '@/database/db';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useCallback, useMemo, useState } from 'react';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { AppText, BookCover, Button, Card, DonutChart, EmptyState, IconSymbol, Input, PressableScale, ProgressBar, RingProgress, Screen, ScreenHeader, Sheet, StarRating, useTabBarPadding, useToast, type IconSymbolName } from '@/components/ui';
+import { gutter, radius, space } from '@/constants/design';
 import { useTheme } from '@/contexts/ThemeContext';
+import { getAllBooks, getCollections, getSetting, setSetting, type Book } from '@/database/db';
+import { computeStats, statusColors } from '@/lib/book-utils';
 
-const { width } = Dimensions.get('window');
-const isWeb = Platform.OS === 'web';
-
-const INSPIRED_QUOTES = [
-  { text: "Buku adalah jendela dunia di mana kita bisa melihat masa lalu dan merancang masa depan.", author: "Anonim" },
-  { text: "Membaca adalah alat paling mendasar untuk memperoleh keterampilan hidup.", author: "Barack Obama" },
-  { text: "Aku rela di penjara asalkan bersama buku, karena dengan buku aku bebas.", author: "Mohammad Hatta" },
-  { text: "Jika Anda tidak suka membaca, Anda belum menemukan buku yang tepat.", author: "J.K. Rowling" }
+const QUOTES = [
+  { text: 'Buku adalah jendela dunia: di sana kita melihat masa lalu dan merancang masa depan.', author: 'Pepatah' },
+  { text: 'Membaca adalah alat paling mendasar untuk memperoleh keterampilan hidup.', author: 'Barack Obama' },
+  { text: 'Aku rela dipenjara asalkan bersama buku, karena dengan buku aku bebas.', author: 'Mohammad Hatta' },
+  { text: 'Jika Anda tidak suka membaca, Anda belum menemukan buku yang tepat.', author: 'J.K. Rowling' },
+  { text: 'Satu buku, satu pena, satu anak, dan satu guru dapat mengubah dunia.', author: 'Malala Yousafzai' },
 ];
 
-export default function StatsHubScreen() {
-  const { theme: t } = useTheme();
-  const styles = makeStyles(t, isWeb);
-  const [books, setBooks] = useState<Book[]>([]);
-  const [quoteIndex, setQuoteIndex] = useState(0);
+const MILESTONES: { count: number; label: string; icon: IconSymbolName }[] = [
+  { count: 1, label: 'Langkah Pertama', icon: 'bolt.fill' },
+  { count: 5, label: 'Pembaca Rutin', icon: 'flame.fill' },
+  { count: 10, label: 'Kolektor', icon: 'medal.fill' },
+  { count: 25, label: 'Kutu Buku', icon: 'rosette' },
+  { count: 50, label: 'Pustakawan', icon: 'trophy.fill' },
+];
 
-  // Fetch books on screen focus to keep stats real-time
+const DEFAULT_GOAL = 12;
+const MAX_CONTENT_WIDTH = 1000;
+
+export default function StatsScreen() {
+  const { theme: t } = useTheme();
+  const toast = useToast();
+  const bottomPad = useTabBarPadding();
+  const { width: windowWidth } = useWindowDimensions();
+
+  const [books, setBooks] = useState<Book[]>([]);
+  const [shelves, setShelves] = useState(0);
+  const [goal, setGoal] = useState(DEFAULT_GOAL);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [goalSheet, setGoalSheet] = useState(false);
+  const [goalInput, setGoalInput] = useState('');
+
   useFocusEffect(
     useCallback(() => {
-      const loadBooks = async () => {
-        const allBooks = await getAllBooks();
-        setBooks(allBooks);
-      };
-      loadBooks();
-      
-      // Randomize quote
-      setQuoteIndex(Math.floor(Math.random() * INSPIRED_QUOTES.length));
+      let active = true;
+      (async () => {
+        const [all, cols, savedGoal] = await Promise.all([getAllBooks(), getCollections(), getSetting('yearlyGoal', String(DEFAULT_GOAL))]);
+        if (!active) return;
+        setBooks(all);
+        setShelves(cols.length);
+        setGoal(Math.max(1, Number(savedGoal) || DEFAULT_GOAL));
+        setQuoteIndex(Math.floor(Math.random() * QUOTES.length));
+      })().catch(console.error);
+      return () => { active = false; };
     }, [])
   );
 
-  // Calculate statistics
-  const totalBooks = books.length;
-  const completedBooks = books.filter(b => b.status === 'Selesai').length;
-  const readingBooks = books.filter(b => b.status === 'Sedang Dibaca').length;
-  const wantedBooks = books.filter(b => b.status === 'Ingin Baca').length;
-  const pausedBooks = books.filter(b => b.status === 'Ditunda').length;
-  const pdfBooks = books.filter(b => b.pdf_uri && b.pdf_uri.length > 0).length;
+  const stats = useMemo(() => computeStats(books), [books]);
+  const quote = QUOTES[quoteIndex];
+  const contentWidth = Math.min(windowWidth, MAX_CONTENT_WIDTH);
+  const wide = contentWidth >= 700;
+  const tileCols = wide ? 4 : 2;
+  const tileGap = space.md;
+  const tileWidth = Math.floor((contentWidth - gutter * 2 - tileGap * (tileCols - 1)) / tileCols);
 
-  const totalProgress = books.reduce((acc, curr) => acc + (curr.progress || 0), 0);
-  const averageProgress = totalBooks > 0 ? Math.round(totalProgress / totalBooks) : 0;
+  const segments = [
+    { key: 'Sedang Dibaca', value: stats.reading },
+    { key: 'Selesai', value: stats.completed },
+    { key: 'Ingin Baca', value: stats.wanted },
+    { key: 'Ditunda', value: stats.paused },
+  ].map((s) => ({ ...s, color: statusColors(s.key, t).fg }));
 
-  // Favorite Genre
-  const genres = books.map(b => b.genre).filter(g => g && g.trim() !== '');
-  const genreCounts = genres.reduce((acc, curr) => {
-    acc[curr!] = (acc[curr!] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const topRated = [...books].filter((b) => (b.rating ?? 0) > 0).sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
+  const goalPct = Math.min(100, Math.round((stats.completed / goal) * 100));
 
-  let favoriteGenre = 'Belum Ada';
-  let maxCount = 0;
-  Object.entries(genreCounts).forEach(([genre, count]) => {
-    if (count > maxCount) {
-      maxCount = count;
-      favoriteGenre = genre;
-    }
-  });
+  const saveGoal = async () => {
+    const n = Math.max(1, Math.min(999, parseInt(goalInput, 10) || 0));
+    if (!n) return;
+    await setSetting('yearlyGoal', String(n));
+    setGoal(n);
+    setGoalSheet(false);
+    toast.show({ message: `Target diperbarui: ${n} buku` });
+  };
 
-  // Calculate ratio percentages for chart
-  const completedPct = totalBooks > 0 ? (completedBooks / totalBooks) * 100 : 0;
-  const readingPct = totalBooks > 0 ? (readingBooks / totalBooks) * 100 : 0;
-  const wantedPct = totalBooks > 0 ? (wantedBooks / totalBooks) * 100 : 0;
-  const pausedPct = totalBooks > 0 ? (pausedBooks / totalBooks) * 100 : 0;
-
-  const activeQuote = INSPIRED_QUOTES[quoteIndex];
+  const tiles: { label: string; value: string; icon: IconSymbolName; color: string; soft: string }[] = [
+    { label: 'Total koleksi', value: String(stats.total), icon: 'books.vertical.fill', color: t.accent, soft: t.accentSoft },
+    { label: 'Selesai dibaca', value: String(stats.completed), icon: 'checkmark.circle.fill', color: t.success, soft: t.successSoft },
+    { label: 'Favorit', value: String(stats.favorites), icon: 'heart.fill', color: t.danger, soft: t.dangerSoft },
+    { label: 'E-Book PDF', value: String(stats.pdfs), icon: 'doc.fill', color: t.info, soft: t.infoSoft },
+  ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Analisis & Progres</Text>
-          <Text style={styles.subtitle}>Pantau pencapaian dan kebiasaan membaca Anda.</Text>
-        </View>
+    <Screen>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad, alignSelf: 'center', width: '100%', maxWidth: MAX_CONTENT_WIDTH }}>
+        <ScreenHeader eyebrow="Analisis & progres" title="Statistik" subtitle="Pantau pencapaian dan kebiasaan membaca Anda." />
 
-        {/* Inspirational Quote Card */}
-        <View style={styles.quoteCard}>
-          <Text style={styles.quoteText}>"{activeQuote.text}"</Text>
-          <Text style={styles.quoteAuthor}>— {activeQuote.author}</Text>
-        </View>
+        <View style={{ paddingHorizontal: gutter, gap: space['2xl'] }}>
+          {/* Quote */}
+          <Animated.View entering={FadeInDown.duration(380)}>
+            <Card variant="soft" style={{ overflow: 'hidden' }}>
+              <AppText serif weight="bold" color={t.accent} style={{ position: 'absolute', top: -6, left: 14, fontSize: 96, lineHeight: 100, opacity: 0.18 }}>“</AppText>
+              <AppText variant="subheading" serif italic weight="regular" style={{ lineHeight: 28 }}>{quote.text}</AppText>
+              <AppText variant="label" color={t.accent} style={{ marginTop: space.md }}>— {quote.author}</AppText>
+            </Card>
+          </Animated.View>
 
-        {/* Grid Stats */}
-        <View style={styles.gridContainer}>
-          
-          {/* Card Total Buku */}
-          <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: '#EDE9FE' }]}>
-              <IconSymbol name="books.vertical.fill" size={24} color="#7C3AED" />
-            </View>
-            <Text style={styles.statNumber}>{totalBooks}</Text>
-            <Text style={styles.statLabel}>Total Koleksi</Text>
-          </View>
-
-          {/* Card E-Book PDF */}
-          <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: '#dcfce7' }]}>
-              <IconSymbol name="doc.fill" size={24} color="#15803d" />
-            </View>
-            <Text style={styles.statNumber}>{pdfBooks}</Text>
-            <Text style={styles.statLabel}>E-Book (PDF)</Text>
-          </View>
-
-          {/* Card Progres Rata-rata */}
-          <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: '#f3e8ff' }]}>
-              <IconSymbol name="sparkles" size={24} color="#7e22ce" />
-            </View>
-            <Text style={styles.statNumber}>{averageProgress}%</Text>
-            <Text style={styles.statLabel}>Rerata Progres</Text>
-          </View>
-
-          {/* Card Genre Terfavorit */}
-          <View style={styles.statCard}>
-            <View style={[styles.iconWrapper, { backgroundColor: '#fef3c7' }]}>
-              <IconSymbol name="heart.fill" size={24} color="#b45309" />
-            </View>
-            <Text style={styles.statNumber} numberOfLines={1} adjustsFontSizeToFit>{favoriteGenre}</Text>
-            <Text style={styles.statLabel}>Genre Favorit</Text>
-          </View>
-
-        </View>
-
-        {/* Chart Section */}
-        <View style={styles.chartSection}>
-          <Text style={styles.sectionTitle}>Visualisasi Status Baca</Text>
-          
-          {totalBooks === 0 ? (
-            <View style={styles.emptyChart}>
-              <Text style={styles.emptyChartText}>Tambahkan buku terlebih dahulu untuk melihat grafik status membaca Anda.</Text>
-            </View>
+          {stats.total === 0 ? (
+            <EmptyState
+              icon="chart.pie.fill"
+              title="Belum ada data"
+              description="Statistik akan muncul setelah Anda menambahkan buku pertama ke perpustakaan."
+              actionLabel="Tambah Buku"
+              onAction={() => router.navigate('/add')}
+            />
           ) : (
             <>
-              {/* Custom Stacked Progress Bar Chart */}
-              <View style={styles.chartBarContainer}>
-                {readingPct > 0 && <View style={[styles.chartBarSegment, { width: `${readingPct}%`, backgroundColor: '#3b82f6' }]} />}
-                {completedPct > 0 && <View style={[styles.chartBarSegment, { width: `${completedPct}%`, backgroundColor: '#10b981' }]} />}
-                {wantedPct > 0 && <View style={[styles.chartBarSegment, { width: `${wantedPct}%`, backgroundColor: '#7C3AED' }]} />}
-                {pausedPct > 0 && <View style={[styles.chartBarSegment, { width: `${pausedPct}%`, backgroundColor: '#f59e0b' }]} />}
+              {/* Reading goal */}
+              <Animated.View entering={FadeInDown.delay(60).duration(380)}>
+                <Card style={{ flexDirection: 'row', alignItems: 'center', gap: space.xl }}>
+                  <RingProgress value={goalPct} size={92} thickness={9}>
+                    <AppText variant="heading" serif weight="semibold">{goalPct}%</AppText>
+                  </RingProgress>
+                  <View style={{ flex: 1 }}>
+                    <AppText variant="overline" color={t.textMuted}>Target tahun ini</AppText>
+                    <AppText variant="heading" serif weight="semibold" style={{ marginTop: 4 }}>{stats.completed} dari {goal} buku</AppText>
+                    <AppText variant="caption" color={t.textSecondary} style={{ marginTop: 4 }}>
+                      {stats.completed >= goal ? 'Target tercapai! Luar biasa 🎉' : `${goal - stats.completed} buku lagi untuk mencapai target.`}
+                    </AppText>
+                    <Button label="Ubah target" variant="soft" size="sm" icon="pencil" onPress={() => { setGoalInput(String(goal)); setGoalSheet(true); }} style={{ marginTop: space.md }} />
+                  </View>
+                </Card>
+              </Animated.View>
+
+              {/* Tiles */}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: tileGap }}>
+                {tiles.map((tile, i) => (
+                  <Animated.View key={tile.label} entering={FadeInDown.delay(100 + i * 50).duration(380)} style={{ width: tileWidth }}>
+                    <Card padding={space.lg} style={{ gap: space.md }}>
+                      <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: tile.soft, alignItems: 'center', justifyContent: 'center' }}>
+                        <IconSymbol name={tile.icon} size={20} color={tile.color} />
+                      </View>
+                      <View>
+                        <AppText variant="title" serif weight="semibold">{tile.value}</AppText>
+                        <AppText variant="caption" color={t.textMuted}>{tile.label}</AppText>
+                      </View>
+                    </Card>
+                  </Animated.View>
+                ))}
               </View>
 
-              {/* Legends */}
-              <View style={styles.legendContainer}>
-                
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#3b82f6' }]} />
-                  <View style={styles.legendTextWrapper}>
-                    <Text style={styles.legendName}>Sedang Dibaca</Text>
-                    <Text style={styles.legendVal}>{readingBooks} Buku ({Math.round(readingPct)}%)</Text>
+              {/* Status distribution */}
+              <Animated.View entering={FadeInDown.delay(260).duration(380)}>
+                <Card>
+                  <AppText variant="heading" serif weight="semibold" style={{ marginBottom: space.xl }}>Status Membaca</AppText>
+                  <View style={{ flexDirection: wide ? 'row' : 'column', alignItems: 'center', gap: space['2xl'] }}>
+                    <DonutChart segments={segments} size={170} thickness={22}>
+                      <AppText variant="display" serif weight="semibold">{stats.total}</AppText>
+                      <AppText variant="caption" color={t.textMuted}>buku</AppText>
+                    </DonutChart>
+                    <View style={{ flex: 1, alignSelf: 'stretch', gap: space.md, justifyContent: 'center' }}>
+                      {segments.map((s) => {
+                        const pct = stats.total ? Math.round((s.value / stats.total) * 100) : 0;
+                        return (
+                          <View key={s.key} style={{ gap: 6 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+                              <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: s.color }} />
+                              <AppText variant="label" style={{ flex: 1 }}>{s.key}</AppText>
+                              <AppText variant="label" color={t.textMuted}>{s.value} · {pct}%</AppText>
+                            </View>
+                            <ProgressBar value={pct} height={6} color={s.color} />
+                          </View>
+                        );
+                      })}
+                    </View>
                   </View>
-                </View>
+                </Card>
+              </Animated.View>
 
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#10b981' }]} />
-                  <View style={styles.legendTextWrapper}>
-                    <Text style={styles.legendName}>Selesai</Text>
-                    <Text style={styles.legendVal}>{completedBooks} Buku ({Math.round(completedPct)}%)</Text>
-                  </View>
-                </View>
-
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#7C3AED' }]} />
-                  <View style={styles.legendTextWrapper}>
-                    <Text style={styles.legendName}>Ingin Baca</Text>
-                    <Text style={styles.legendVal}>{wantedBooks} Buku ({Math.round(wantedPct)}%)</Text>
-                  </View>
-                </View>
-
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendIndicator, { backgroundColor: '#f59e0b' }]} />
-                  <View style={styles.legendTextWrapper}>
-                    <Text style={styles.legendName}>Ditunda</Text>
-                    <Text style={styles.legendVal}>{pausedBooks} Buku ({Math.round(pausedPct)}%)</Text>
-                  </View>
-                </View>
-
+              {/* Average progress + rating */}
+              <View style={{ flexDirection: 'row', gap: tileGap }}>
+                <Card style={{ flex: 1, alignItems: 'center', gap: space.md }}>
+                  <RingProgress value={stats.avgProgress} size={76} thickness={7}>
+                    <AppText variant="subheading" weight="bold">{stats.avgProgress}%</AppText>
+                  </RingProgress>
+                  <AppText variant="caption" color={t.textMuted} align="center">Rerata progres</AppText>
+                </Card>
+                <Card style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.sm }}>
+                  <AppText variant="display" serif weight="semibold">{stats.avgRating ? stats.avgRating.toFixed(1) : '–'}</AppText>
+                  <StarRating value={Math.round(stats.avgRating)} size={14} gap={2} />
+                  <AppText variant="caption" color={t.textMuted} align="center">Rating rata-rata</AppText>
+                </Card>
               </View>
+
+              {/* Genres */}
+              {stats.genres.length > 0 ? (
+                <Animated.View entering={FadeInDown.delay(320).duration(380)}>
+                  <Card style={{ gap: space.lg }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <AppText variant="heading" serif weight="semibold">Genre Favorit</AppText>
+                      <AppText variant="label" color={t.textMuted}>{stats.genres.length} genre</AppText>
+                    </View>
+                    {stats.genres.slice(0, 5).map(([genre, count], i) => (
+                      <View key={genre} style={{ gap: 6 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <AppText variant="label" weight={i === 0 ? 'bold' : 'semibold'}>{i === 0 ? '★ ' : ''}{genre}</AppText>
+                          <AppText variant="label" color={t.textMuted}>{count} buku</AppText>
+                        </View>
+                        <ProgressBar value={(count / stats.genres[0][1]) * 100} height={8} />
+                      </View>
+                    ))}
+                  </Card>
+                </Animated.View>
+              ) : null}
+
+              {/* Top rated */}
+              {topRated.length > 0 ? (
+                <Card style={{ gap: space.lg }}>
+                  <AppText variant="heading" serif weight="semibold">Rating Tertinggi</AppText>
+                  {topRated.map((b) => (
+                    <PressableScale key={b.id} onPress={() => router.push({ pathname: '/book/[id]', params: { id: String(b.id) } })} style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+                      <BookCover uri={b.cover} title={b.title} width={44} radius={6} elevated={false} />
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="label" weight="bold" numberOfLines={1}>{b.title}</AppText>
+                        <AppText variant="caption" color={t.textMuted} numberOfLines={1}>{b.author}</AppText>
+                      </View>
+                      <StarRating value={b.rating ?? 0} size={14} gap={1} />
+                    </PressableScale>
+                  ))}
+                </Card>
+              ) : null}
+
+              {/* Milestones */}
+              <Card style={{ gap: space.lg }}>
+                <View>
+                  <AppText variant="heading" serif weight="semibold">Pencapaian</AppText>
+                  <AppText variant="caption" color={t.textMuted} style={{ marginTop: 2 }}>Berdasarkan jumlah buku yang selesai dibaca · {shelves} rak tersusun</AppText>
+                </View>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
+                  {MILESTONES.map((m) => {
+                    const unlocked = stats.completed >= m.count;
+                    return (
+                      <View key={m.count} style={{ width: wide ? '18%' : '30%', flexGrow: 1, alignItems: 'center', gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: unlocked ? t.accentSoft : t.surfaceAlt, opacity: unlocked ? 1 : 0.6 }}>
+                        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: unlocked ? t.accent : t.border, alignItems: 'center', justifyContent: 'center' }}>
+                          <IconSymbol name={unlocked ? m.icon : 'lock.fill'} size={20} color={unlocked ? t.onAccent : t.textMuted} />
+                        </View>
+                        <AppText variant="caption" weight="bold" align="center" numberOfLines={2}>{m.label}</AppText>
+                        <AppText variant="caption" color={t.textMuted}>{m.count} buku</AppText>
+                      </View>
+                    );
+                  })}
+                </View>
+              </Card>
             </>
           )}
         </View>
-
-        {/* Habits Checklist Banner */}
-        <View style={styles.habitsContainer}>
-          <Text style={styles.sectionTitle}>Habits Tracker</Text>
-          <View style={styles.habitCard}>
-            <View style={styles.habitRow}>
-              <View style={styles.habitDotActive} />
-              <Text style={styles.habitText}>Membaca minimal 15 menit hari ini</Text>
-            </View>
-            <View style={styles.habitRow}>
-              <View style={styles.habitDotActive} />
-              <Text style={styles.habitText}>Catat progres membaca setiap hari</Text>
-            </View>
-            <View style={styles.habitRow}>
-              <View style={styles.habitDot} />
-              <Text style={styles.habitText}>Tulis review singkat setelah selesai membaca</Text>
-            </View>
-          </View>
-        </View>
-
       </ScrollView>
-    </SafeAreaView>
+
+      <Sheet visible={goalSheet} onClose={() => setGoalSheet(false)} title="Target Membaca" subtitle="Berapa buku yang ingin Anda selesaikan tahun ini?">
+        <View style={{ gap: space.lg }}>
+          <Input label="Jumlah buku" icon="trophy.fill" keyboardType="number-pad" value={goalInput} onChangeText={setGoalInput} autoFocus maxLength={3} returnKeyType="done" onSubmitEditing={saveGoal} />
+          <View style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}>
+            {[6, 12, 24, 52].map((n) => (
+              <Button key={n} label={`${n} buku`} variant={goalInput === String(n) ? 'soft' : 'secondary'} size="sm" onPress={() => setGoalInput(String(n))} />
+            ))}
+          </View>
+          <Button label="Simpan Target" icon="checkmark" size="lg" fullWidth onPress={saveGoal} />
+        </View>
+      </Sheet>
+    </Screen>
   );
 }
-
-const makeStyles = (t: any, isWeb: boolean) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: t.bg },
-  scrollContent: { paddingBottom: 40 },
-  header: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16 },
-  title: { color: t.text, fontSize: 32, fontWeight: '800', letterSpacing: -1, marginBottom: 6 },
-  subtitle: { color: t.textSecondary, fontSize: 15 },
-  quoteCard: {
-    backgroundColor: t.card, marginHorizontal: 24, marginTop: 8, marginBottom: 20, padding: 20,
-    borderRadius: 20, borderWidth: 1, borderColor: t.accentBorder, borderStyle: 'dashed',
-    shadowColor: t.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2,
-  },
-  quoteText: { color: t.text, fontSize: 15, fontStyle: 'italic', lineHeight: 22, textAlign: 'center', marginBottom: 8 },
-  quoteAuthor: { color: t.accent, fontSize: 13, fontWeight: '600', textAlign: 'center' },
-  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, justifyContent: 'space-between', marginBottom: 24 },
-  statCard: {
-    width: isWeb ? '23%' : '47%', marginHorizontal: '1.5%', backgroundColor: t.card,
-    borderRadius: 20, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: t.accentBorder,
-    shadowColor: t.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 3,
-  },
-  iconWrapper: { width: 48, height: 48, borderRadius: 14, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  statNumber: { color: t.text, fontSize: 24, fontWeight: '800', marginBottom: 4 },
-  statLabel: { color: t.textMuted, fontSize: 13, fontWeight: '600' },
-  chartSection: {
-    backgroundColor: t.card, marginHorizontal: 24, borderRadius: 24, padding: 20,
-    borderWidth: 1, borderColor: t.accentBorder, marginBottom: 24,
-    shadowColor: t.shadow, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 4,
-  },
-  sectionTitle: { color: t.text, fontSize: 20, fontWeight: '700', marginBottom: 16 },
-  emptyChart: { paddingVertical: 30, alignItems: 'center' },
-  emptyChartText: { color: t.textMuted, textAlign: 'center', fontSize: 14, lineHeight: 20 },
-  chartBarContainer: { height: 24, backgroundColor: t.bg, borderRadius: 12, flexDirection: 'row', overflow: 'hidden', marginBottom: 24 },
-  chartBarSegment: { height: '100%' },
-  legendContainer: { gap: 12 },
-  legendItem: { flexDirection: 'row', alignItems: 'center' },
-  legendIndicator: { width: 12, height: 12, borderRadius: 4, marginRight: 12 },
-  legendTextWrapper: { flexDirection: 'row', justifyContent: 'space-between', flex: 1 },
-  legendName: { color: t.textSecondary, fontSize: 14, fontWeight: '500' },
-  legendVal: { color: t.textMuted, fontSize: 14, fontWeight: '600' },
-  habitsContainer: { paddingHorizontal: 24 },
-  habitCard: {
-    backgroundColor: t.card, borderRadius: 24, padding: 20, borderWidth: 1, borderColor: t.accentBorder,
-    shadowColor: t.shadow, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 4,
-  },
-  habitRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
-  habitDotActive: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#10b981', marginRight: 12 },
-  habitDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: t.textMuted, marginRight: 12 },
-  habitText: { color: t.textSecondary, fontSize: 14 },
-});
-

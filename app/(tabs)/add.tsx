@@ -1,127 +1,86 @@
-import { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, Alert, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
-import { Image } from 'expo-image';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { addBook, Book } from '@/database/db';
+import { useState } from 'react';
+import { ScrollView, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
+import { BookForm, type BookFormValues } from '@/components/BookForm';
+import { AppText, IconButton, IconSymbol, PressableScale, Screen, ScreenHeader, useTabBarPadding, useToast } from '@/components/ui';
+import { gutter, radius, shadow, space } from '@/constants/design';
 import { useTheme } from '@/contexts/ThemeContext';
+import { addBook, type Book } from '@/database/db';
+import { notify } from '@/lib/dialogs';
+
+type ScanParams = { scanKey?: string; title?: string; author?: string; genre?: string; cover?: string; synopsis?: string };
 
 export default function AddBookScreen() {
   const { theme: t } = useTheme();
-  const params = useLocalSearchParams();
+  const toast = useToast();
+  const bottomPad = useTabBarPadding();
+  const params = useLocalSearchParams<ScanParams>();
 
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [genre, setGenre] = useState('');
-  const [synopsis, setSynopsis] = useState('');
-  const [cover, setCover] = useState<string | null>(null);
-  const [pdfUri, setPdfUri] = useState<string | null>(null);
-  const [pdfName, setPdfName] = useState<string | null>(null);
+  // A new scan arrives as route params with a fresh `scanKey`. We apply it once
+  // (derived state) and remount the form so the fields are prefilled.
+  const [appliedKey, setAppliedKey] = useState<string | undefined>(undefined);
+  const [prefill, setPrefill] = useState<Partial<Book> | null>(null);
+  const [formVersion, setFormVersion] = useState(0);
+  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (params.title) setTitle(params.title as string);
-    if (params.author) setAuthor(params.author as string);
-    if (params.genre) setGenre(params.genre as string);
-    if (params.cover) setCover(params.cover as string);
-    if (params.synopsis) setSynopsis(params.synopsis as string);
-  }, [params]);
+  if (params.scanKey && params.scanKey !== appliedKey) {
+    setAppliedKey(params.scanKey);
+    setPrefill({ title: params.title, author: params.author, genre: params.genre, cover: params.cover, synopsis: params.synopsis });
+    setFormVersion((v) => v + 1);
+  }
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [2, 3], quality: 0.7 });
-    if (!result.canceled) setCover(result.assets[0].uri);
-  };
-
-  const pickPdf = async () => {
+  const handleSubmit = async (values: BookFormValues) => {
+    setSaving(true);
     try {
-      const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf', copyToCacheDirectory: true });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        let uri = result.assets[0].uri;
-        setPdfUri(uri);
-        setPdfName(result.assets[0].name);
-      }
-    } catch (err) {
-      Alert.alert('Error', 'Gagal memilih file PDF');
-    }
-  };
-
-  const handleSave = async () => {
-    if (!title || !author) { Alert.alert('Error', 'Judul dan Penulis wajib diisi!'); return; }
-    const newBook: Book = { title, author, genre, synopsis, cover: cover || '', pdf_uri: pdfUri || '', status: 'Ingin Baca', progress: 0, rating: 0 };
-    try {
-      await addBook(newBook);
-      Alert.alert('Sukses', 'Buku berhasil ditambahkan ke koleksi!');
-      router.replace('/');
-      setTitle(''); setAuthor(''); setGenre(''); setSynopsis(''); setCover(null); setPdfUri(null); setPdfName(null);
-    } catch (error: any) {
+      await addBook({ ...values, progress: values.status === 'Selesai' ? 100 : 0, rating: 0, is_favorite: 0 });
+      toast.show({ message: `“${values.title}” ditambahkan ke koleksi` });
+      setPrefill(null);
+      setFormVersion((v) => v + 1);
+      router.navigate('/');
+    } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Gagal menyimpan buku: ' + (error?.message || String(error)));
+      notify('Gagal menyimpan', error instanceof Error ? error.message : String(error));
+    } finally {
+      setSaving(false);
     }
   };
-
-  const inputStyle: any = { backgroundColor: t.card, color: t.text, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 14, borderWidth: 1, borderColor: t.accentBorder, fontSize: 16, outlineStyle: 'none', shadowColor: t.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 6, elevation: 1 };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+    <Screen>
+      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: bottomPad, alignSelf: 'center', width: '100%', maxWidth: 760 }}>
+        <ScreenHeader
+          eyebrow="Koleksi baru"
+          title="Tambah Buku"
+          right={<IconButton icon="barcode.viewfinder" onPress={() => router.push('/book/scan')} accessibilityLabel="Scan ISBN" background={t.accentSoft} color={t.accent} size={44} iconSize={22} />}
+        />
 
-        {/* Header */}
-        <View style={{ marginBottom: 28, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <View>
-            <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '500', marginBottom: 4 }}>Tambahkan Buku Baru</Text>
-            <Text style={{ color: t.text, fontSize: 28, fontWeight: 'bold', letterSpacing: -0.5 }}>Koleksi Baru</Text>
-          </View>
-          <Pressable style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: t.accent, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 14, gap: 6, shadowColor: t.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 3 }} onPress={() => router.push('/book/scan')}>
-            <IconSymbol name="barcode.viewfinder" size={20} color="#ffffff" />
-            <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600' }}>Scan ISBN</Text>
-          </Pressable>
-        </View>
-
-        {/* Cover Upload */}
-        <Pressable style={{ width: 150, height: 220, backgroundColor: t.card, borderRadius: 20, borderWidth: 2, borderColor: t.accentBorder, borderStyle: 'dashed', alignSelf: 'center', marginBottom: 28, justifyContent: 'center', alignItems: 'center', overflow: 'hidden', shadowColor: t.shadow, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 15, elevation: 4 }} onPress={pickImage}>
-          {cover ? (
-            <Image source={{ uri: cover }} style={{ width: '100%', height: '100%' }} />
-          ) : (
-            <View style={{ alignItems: 'center', padding: 16 }}>
-              <View style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: t.accentLight, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <IconSymbol name="camera" size={28} color={t.accent} />
+        <View style={{ paddingHorizontal: gutter, gap: space['2xl'] }}>
+          {/* Scan banner */}
+          <PressableScale onPress={() => router.push('/book/scan')} style={{ borderRadius: radius.xl, ...shadow(t.accent, 3) }}>
+            <LinearGradient colors={t.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.lg, overflow: 'hidden' }}>
+              <View pointerEvents="none" style={{ position: 'absolute', right: -40, top: -50, width: 150, height: 150, borderRadius: 75, backgroundColor: 'rgba(255,255,255,0.12)' }} />
+              <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' }}>
+                <IconSymbol name="barcode.viewfinder" size={28} color="#fff" />
               </View>
-              <Text style={{ color: t.text, fontSize: 14, fontWeight: 'bold' }}>Upload Cover</Text>
-              <Text style={{ color: t.textMuted, fontSize: 11, marginTop: 4 }}>Rasio 2:3</Text>
+              <View style={{ flex: 1 }}>
+                <AppText variant="subheading" weight="bold" color="#fff">Scan ISBN</AppText>
+                <AppText variant="caption" color="rgba(255,255,255,0.8)">Arahkan kamera ke barcode di sampul belakang. Data buku terisi otomatis.</AppText>
+              </View>
+              <IconSymbol name="chevron.right" size={20} color="rgba(255,255,255,0.9)" />
+            </LinearGradient>
+          </PressableScale>
+
+          {prefill ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg, paddingVertical: space.md, borderRadius: radius.md, backgroundColor: t.successSoft }}>
+              <IconSymbol name="checkmark.circle.fill" size={18} color={t.success} />
+              <AppText variant="label" color={t.success} style={{ flex: 1 }}>Data dari hasil scan sudah diisi. Periksa lalu simpan.</AppText>
             </View>
-          )}
-        </Pressable>
+          ) : null}
 
-        {/* PDF */}
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Berkas E-Book (PDF - Opsional)</Text>
-          <Pressable style={[inputStyle, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} onPress={pickPdf}>
-            <IconSymbol name="doc.fill" size={20} color={pdfUri ? '#10b981' : t.textMuted} />
-            <Text style={{ color: pdfUri ? '#10b981' : t.textMuted, fontSize: 16, flex: 1, fontWeight: pdfUri ? 'bold' : 'normal' }} numberOfLines={1}>
-              {pdfName || 'Pilih File E-Book (PDF)'}
-            </Text>
-          </Pressable>
+          <BookForm key={formVersion} initial={prefill} submitLabel="Simpan ke Koleksi" submitting={saving} onSubmit={handleSubmit} />
         </View>
-
-        {/* Fields */}
-        {[{ label: 'Judul Buku *', value: title, setter: setTitle, placeholder: 'Masukkan judul buku...' }, { label: 'Penulis *', value: author, setter: setAuthor, placeholder: 'Nama penulis...' }, { label: 'Genre', value: genre, setter: setGenre, placeholder: 'Fiksi, Sains, Sejarah, dll.' }].map(field => (
-          <View key={field.label} style={{ marginBottom: 20 }}>
-            <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>{field.label}</Text>
-            <TextInput style={inputStyle} value={field.value} onChangeText={field.setter} placeholder={field.placeholder} placeholderTextColor={t.textMuted} />
-          </View>
-        ))}
-
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ color: t.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Sinopsis (Opsional)</Text>
-          <TextInput style={[inputStyle, { minHeight: 100, textAlignVertical: 'top' }]} value={synopsis} onChangeText={setSynopsis} placeholder="Tuliskan sinopsis singkat..." placeholderTextColor={t.textMuted} multiline numberOfLines={4} />
-        </View>
-
-        <Pressable style={{ backgroundColor: t.accent, paddingVertical: 16, borderRadius: 14, alignItems: 'center', marginTop: 16, shadowColor: t.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 10, elevation: 6 }} onPress={handleSave}>
-          <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }}>Simpan Buku Ke Koleksi</Text>
-        </Pressable>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

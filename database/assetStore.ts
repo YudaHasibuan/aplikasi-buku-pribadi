@@ -49,7 +49,7 @@ export const resolveAsset = (stored: string | null | undefined): string => {
   if (stored.startsWith(PREFIX) && Platform.OS === 'web') {
     try {
       return localStorage.getItem(stored) ?? '';
-    } catch (e) {
+    } catch {
       return '';
     }
   }
@@ -64,6 +64,6 @@ export const deleteAsset = (stored: string | null | undefined): void => {
   if (stored.startsWith(PREFIX) && Platform.OS === 'web') {
     try {
       localStorage.removeItem(stored);
-    } catch (_) {}
+    } catch { /* already removed */ }
   }
 };

@@ -102,8 +102,8 @@ async function getNativeDb(): Promise<import('expo-sqlite').SQLiteDatabase> {
       'CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT DEFAULT \'\');'
     );
 
-    try { await _db.execAsync('ALTER TABLE books ADD COLUMN is_favorite INTEGER DEFAULT 0;'); } catch (_) {}
-    try { await _db.execAsync('ALTER TABLE books ADD COLUMN pdf_uri TEXT DEFAULT \'\';'); } catch (_) {}
+    try { await _db.execAsync('ALTER TABLE books ADD COLUMN is_favorite INTEGER DEFAULT 0;'); } catch { /* column exists */ }
+    try { await _db.execAsync('ALTER TABLE books ADD COLUMN pdf_uri TEXT DEFAULT \'\';'); } catch { /* column exists */ }
   })();
 
   await _initPromise;
@@ -297,6 +297,33 @@ export const getCollections = async (): Promise<Collection[]> => {
   );
 };
 
+export const getCollectionById = async (id: number): Promise<Collection | null> => {
+  if (Platform.OS === 'web') {
+    const cols = LS.get<Collection[]>(WEB_COLLECTIONS, []);
+    const col = cols.find(c => c.id === id) ?? null;
+    if (!col) return null;
+    const cbStore = LS.get<CollectionBook[]>(WEB_COL_BOOKS, []);
+    return { ...col, bookCount: cbStore.filter(cb => cb.collection_id === id).length };
+  }
+  const db = await getNativeDb();
+  const row = await db.getFirstAsync<Collection>(
+    'SELECT c.id, c.name, c.description, COUNT(cb.book_id) as bookCount FROM collections c LEFT JOIN collection_books cb ON c.id = cb.collection_id WHERE c.id = ? GROUP BY c.id',
+    [id]
+  );
+  return row ?? null;
+};
+
+export const updateCollection = async (id: number, name: string, description = ''): Promise<void> => {
+  if (Platform.OS === 'web') {
+    const cols = LS.get<Collection[]>(WEB_COLLECTIONS, []);
+    const idx = cols.findIndex(c => c.id === id);
+    if (idx !== -1) { cols[idx] = { ...cols[idx], name, description }; LS.set(WEB_COLLECTIONS, cols); }
+    return;
+  }
+  const db = await getNativeDb();
+  await db.runAsync('UPDATE collections SET name = ?, description = ? WHERE id = ?', [name, description, id]);
+};
+
 export const deleteCollection = async (id: number): Promise<void> => {
   if (Platform.OS === 'web') {
     const cols = LS.get<Collection[]>(WEB_COLLECTIONS, []);
@@ -318,7 +345,7 @@ export const addBookToCollection = async (collectionId: number, bookId: number):
     return;
   }
   const db = await getNativeDb();
-  try { await db.runAsync('INSERT OR IGNORE INTO collection_books (collection_id, book_id) VALUES (?, ?)', [collectionId, bookId]); } catch (_) {}
+  await db.runAsync('INSERT OR IGNORE INTO collection_books (collection_id, book_id) VALUES (?, ?)', [collectionId, bookId]);
 };
 
 export const removeBookFromCollection = async (collectionId: number, bookId: number): Promise<void> => {
@@ -339,8 +366,9 @@ export const getBooksByCollection = async (collectionId: number): Promise<Book[]
     return books.map(resolveBook);
   }
   const db = await getNativeDb();
-  return db.getAllAsync<Book>(
-    'SELECT b.* FROM books b INNER JOIN collection_books cb ON b.id = cb.book_id WHERE cb.collection_id = ?',
+  const rows = await db.getAllAsync<Book>(
+    'SELECT b.* FROM books b INNER JOIN collection_books cb ON b.id = cb.book_id WHERE cb.collection_id = ? ORDER BY b.id DESC',
     [collectionId]
   );
+  return rows.map(resolveBook);
 };
